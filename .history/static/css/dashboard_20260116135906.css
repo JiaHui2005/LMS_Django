@@ -1,0 +1,207 @@
+body {
+    background: #f4f6f9;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar .logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar .menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar .menu li {
+    margin-bottom: 12px;
+}
+
+.sidebar .menu a {
+    color: white;
+    text-decoration: none;
+    padding: 8px;
+    display: block;
+    border-radius: 6px;
+}
+
+.sidebar .menu a:hover {
+    background: #34495e;
+}
+
+.sidebar .logout {
+    color: #ff7675;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    padding: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.08);
+}
+
+.stat-card p {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* ====== LAYOUT ====== */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ====== SIDEBAR ====== */
+.sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #1f2933, #111827);
+    color: #fff;
+    padding: 20px 15px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.logo-icon {
+    font-size: 26px;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    margin-bottom: 10px;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: #d1d5db;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.menu a.active {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+
+.menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+}
+
+.menu a.logout {
+    color: #f87171;
+}
+
+.menu a.logout:hover {
+    background: rgba(248, 113, 113, 0.15);
+    color: #fecaca;
+}
+
+/* ====== MAIN CONTENT ====== */
+.main-content {
+    flex: 1;
+    background: #f4f6f9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ====== NAVBAR ====== */
+.topbar {
+    height: 60px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.topbar-left {
+    font-size: 18px;
+}
+
+.topbar-right {
+    font-size: 14px;
+    color: #374151;
+}
+
+.user-info small {
+    color: #6b7280;
+}
+
+/* ====== PAGE ====== */
+.page-content {
+    padding: 30px;
+}
+
+/* ====== STAT CARD ====== */
+.stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-card h6 {
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+    color: #111827;
+}

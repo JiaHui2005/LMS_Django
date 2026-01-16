@@ -1,0 +1,105 @@
+<style>
+    :root {
+        --topbar-height: 70px;
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --border-color: #e2e8f0;
+        --primary-text: #1e293b;
+        --secondary-text: #64748b;
+    }
+
+    .topbar {
+        height: var(--topbar-height);
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px); /* Hiệu ứng mờ nền */
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+        border-bottom: 1px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        z-index: 99;
+    }
+
+    /* Bên trái: Tiêu đề trang */
+    .topbar-left .page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Bên phải: Thông tin người dùng */
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #f8fafc;
+        padding: 6px 16px;
+        border-radius: 50px; /* Bo tròn kiểu capsule */
+        border: 1px solid var(--border-color);
+        transition: all 0.2s;
+    }
+
+    .topbar-right:hover {
+        background: #f1f5f9;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--primary-text);
+        font-size: 0.9rem;
+    }
+
+    .user-role {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #3b82f6; /* Màu nhấn cho vai trò */
+        background: #eff6ff;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
+    /* Thêm một avatar giả để giao diện đầy đủ hơn */
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+</style>
+
+<nav class="topbar">
+    <div class="topbar-left">
+        <span class="page-title">
+            <i class="fas fa-th-large text-primary"></i> 
+            {{ title|default:"Dashboard" }}
+        </span>
+    </div>
+
+    <div class="topbar-right">
+        <div class="user-avatar">
+            {{ user.username|slice:":1"|upper }}
+        </div>
+        <div class="d-flex flex-column">
+            <span class="user-name">
+                {{ user.full_name|default:user.username }}
+            </span>
+        </div>
+        <span class="user-role">
+            {{ user.role }}
+        </span>
+    </div>
+</nav>

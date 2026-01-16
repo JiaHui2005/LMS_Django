@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% block title %}Danh sách người dùng{% endblock %}
+
+{% block content %}
+<style>
+    /* Tổng thể container */
+    .table-container {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        {% comment %} margin-top: 2rem; {% endcomment %}
+        border: 1px solid #f0f0f0;
+    }
+
+    /* Tiêu đề và Nút thêm mới */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .header-section h2 {
+        color: #1a202c;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    /* Tùy chỉnh bảng */
+    .table {
+        vertical-align: middle;
+    }
+
+    .table thead {
+        background-color: #f8fafc;
+    }
+
+    .table thead th {
+        border: none;
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f5f9;
+        transform: scale(1.002);
+    }
+
+    .table td {
+        padding: 1.2rem 1rem;
+        color: #334155;
+        font-size: 0.95rem;
+    }
+
+    /* Badge trạng thái */
+    .badge {
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .bg-success-light {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .bg-secondary-light {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    /* Nút hành động */
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.2s;
+        margin: 0 2px;
+        border: none;
+    }
+
+    .btn-edit {
+        background-color: #fef9c3;
+        color: #854d0e;
+    }
+
+    .btn-edit:hover {
+        background-color: #fde047;
+        color: #854d0e;
+    }
+
+    .btn-delete {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .btn-delete:hover {
+        background-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .btn-create {
+        border-radius: 10px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+</style>
+
+<div class="container">
+    <div class="table-container">
+        <div class="header-section">
+            <h2>👥 Quản lý người dùng</h2>
+            <a href="{% url 'user_create' %}" class="btn btn-primary btn-create">
+                <i class="fas fa-plus me-2"></i> Tạo tài khoản
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td class="fw-bold">{{ u.username }}</td>
+                        <td>{{ u.full_name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            <span class="text-muted small">
+                                <i class="fas fa-user-tag me-1"></i> {{ u.get_role_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if u.is_active %}
+                                <span class="badge bg-success-light">● Hoạt động</span>
+                            {% else %}
+                                <span class="badge bg-secondary-light">○ Khóa</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'user_edit' u.id %}" class="btn-action btn-edit" title="Sửa">
+                                <i class="fas fa-pen-nib"></i>
+                            </a>
+                            <a href="{% url 'user_delete' u.id %}" class="btn-action btn-delete" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            Chưa có người dùng nào trong hệ thống.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

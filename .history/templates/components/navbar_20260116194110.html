@@ -1,0 +1,155 @@
+<style>
+    /* Biến local cho Topbar */
+    :root {
+        --topbar-height: 70px;
+        --glass-white: rgba(255, 255, 255, 0.8);
+        --border-soft: #f1f5f9;
+        --text-main: #1e293b;
+        --text-sub: #64748b;
+    }
+
+    .topbar {
+        height: var(--topbar-height);
+        background: var(--glass-white);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1.5rem;
+        border-bottom: 1px solid var(--border-soft);
+        position: sticky;
+        top: 0;
+        z-index: 990;
+    }
+
+    /* Left side: Breadcrumb style title */
+    .topbar-left {
+        display: flex;
+        align-items: center;
+    }
+
+    .page-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-title i {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.3rem;
+    }
+
+    /* Right side: User Profile Capsule */
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .profile-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 6px 6px 16px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 50px; /* Kiểu Capsule */
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+
+    .profile-link:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .user-name {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-main);
+        white-space: nowrap;
+    }
+
+    .user-role-badge {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #3b82f6;
+        letter-spacing: 0.05em;
+    }
+
+    /* Avatar với hiệu ứng đổ bóng và viền */
+    .user-avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #3b82f6);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Badge thông báo (nếu sau này bạn muốn thêm) */
+    .notif-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: var(--text-sub);
+        transition: all 0.2s;
+        position: relative;
+    }
+
+    .notif-btn:hover {
+        background: #f1f5f9;
+        color: var(--text-main);
+    }
+</style>
+
+<nav class="topbar">
+    <div class="topbar-left">
+        <span class="page-title">
+            <i class="fas fa-layer-group"></i> 
+            {{ title|default:"Dashboard" }}
+        </span>
+    </div>
+
+    <div class="topbar-right">
+        <div class="notif-btn">
+            <i class="far fa-bell"></i>
+            <span class="position-absolute top-2 start-75 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+        </div>
+
+        <a class="profile-link">
+            <div class="user-info d-none d-md-flex text-end">
+                <span class="user-name">{{ user.full_name|default:user.username }}</span>
+                <span class="user-role-badge">{{ user.role }}</span>
+            </div>
+            <div class="user-avatar-circle">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+        </a>
+    </div>
+</nav>

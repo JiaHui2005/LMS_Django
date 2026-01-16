@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Manager{% endblock %}
+
+{% block content %}
+<style>
+    /* Tiêu đề trang */
+    .page-heading {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Thẻ thống kê */
+    .stat-card {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card h6 {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+        color: #1e293b;
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Trang trí thêm cho mỗi thẻ bằng vạch màu bên cạnh */
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+    }
+    .col-md-3:nth-child(1) .stat-card::before { background: #3b82f6; } /* Blue */
+    .col-md-3:nth-child(2) .stat-card::before { background: #10b981; } /* Green */
+    .col-md-3:nth-child(3) .stat-card::before { background: #f59e0b; } /* Orange */
+    .col-md-3:nth-child(4) .stat-card::before { background: #8b5cf6; } /* Purple */
+
+    /* Card chứa biểu đồ */
+    .chart-card {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-top: 1rem;
+    }
+
+    .chart-title {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="container-fluid">
+    <h2 class="page-heading">📊 Dashboard Quản Lý</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h6>Tổng người dùng</h6>
+                <p>{{ total_users }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h6>Sinh viên</h6>
+                <p>{{ total_students }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h6>Giảng viên</h6>
+                <p>{{ total_lecturers }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h6>Lớp học</h6>
+                <p>{{ total_classes }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-title">📈 Phân bổ nhân sự hệ thống</div>
+        <div style="position: relative; height:300px; width:100%">
+            <canvas id="userChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('userChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Sinh viên', 'Giảng viên'],
+            datasets: [{
+                label: 'Số lượng',
+                data: [{{ total_students }}, {{ total_lecturers }}],
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.8)', 
+                    'rgba(16, 185, 129, 0.8)'
+                ],
+                borderColor: [
+                    '#3b82f6', 
+                    '#10b981'
+                ],
+                borderWidth: 1,
+                borderRadius: 10,
+                barThickness: 60
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false,
+                        color: '#f1f5f9'
+                    },
+                    ticks: {
+                        stepSize: 1
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

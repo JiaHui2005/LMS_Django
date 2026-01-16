@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Manager{% endblock %}
+
+{% block content %}
+<style>
+    /* Tiêu đề trang */
+    .page-heading {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Thẻ thống kê */
+    .stat-card {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card h6 {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-card p {
+        color: #1e293b;
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1;
+    }
+
+    /* Vạch màu chỉ thị cho Card */
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 5px;
+    }
+    .col-card-1 .stat-card::before { background: #3b82f6; }
+    .col-card-2 .stat-card::before { background: #10b981; }
+    .col-card-3 .stat-card::before { background: #f59e0b; }
+    .col-card-4 .stat-card::before { background: #8b5cf6; }
+
+    /* Container cho biểu đồ */
+    .chart-card {
+        background: #ffffff;
+        padding: 1.8rem;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+
+    .chart-title {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+
+<div class="container-fluid">
+    <h2 class="page-heading">📊 Dashboard Quản Lý</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-3 col-card-1 mb-3">
+            <div class="stat-card">
+                <h6>Tổng người dùng</h6>
+                <p>{{ total_users }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-card-2 mb-3">
+            <div class="stat-card">
+                <h6>Sinh viên</h6>
+                <p>{{ total_students }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-card-3 mb-3">
+            <div class="stat-card">
+                <h6>Giảng viên</h6>
+                <p>{{ total_lecturers }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-card-4 mb-3">
+            <div class="stat-card">
+                <h6>Lớp học</h6>
+                <p>{{ total_classes }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="chart-card">
+                <div class="chart-title">📈 Phân bổ nhân sự hệ thống</div>
+                <div style="position: relative; height:320px;">
+                    <canvas id="userBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="chart-card">
+                <div class="chart-title">📊 Tỉ lệ phần trăm</div>
+                <div style="position: relative; height:320px;">
+                    <canvas id="userDoughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Cấu hình font chữ chung cho Chart
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    // 1. BIỂU ĐỒ CỘT (BAR CHART)
+    const ctxBar = document.getElementById('userBarChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Sinh viên', 'Giảng viên'],
+            datasets: [{
+                label: 'Số lượng',
+                data: [{{ total_students }}, {{ total_lecturers }}],
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.15)', // Xanh dương nhạt
+                    'rgba(16, 185, 129, 0.15)'  // Xanh lá nhạt
+                ],
+                borderColor: ['#3b82f6', '#10b981'],
+                borderWidth: 2,
+                borderRadius: 12,
+                barThickness: 70, // Làm cột to ra cho đỡ trống
+                hoverBackgroundColor: ['#3b82f6', '#10b981'], // Đổi màu đậm khi hover
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9', drawBorder: false },
+                    ticks: { stepSize: 1, padding: 10 }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { padding: 10, font: { weight: '600' } }
+                }
+            }
+        }
+    });
+
+    // 2. BIỂU ĐỒ TRÒN (DOUGHNUT CHART)
+    const ctxPie = document.getElementById('userDoughnutChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Sinh viên', 'Giảng viên'],
+            datasets: [{
+                data: [{{ total_students }}, {{ total_lecturers }}],
+                backgroundColor: ['#3b82f6', '#10b981'],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%', // Tạo lỗ rỗng ở giữa cho thanh thoát
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: { size: 12, weight: '600' }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

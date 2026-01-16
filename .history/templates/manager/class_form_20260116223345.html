@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block title %} Thông tin lớp học {% endblock %}
+
+{% block content %}
+<style>
+    /* Card bọc ngoài form */
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f5f9;
+    }
+
+    .form-header {
+        border-bottom: 2px solid #f8fafc;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    /* Tùy chỉnh Input */
+    .form-control {
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 0.75rem 1rem !important;
+        background-color: #f8fafc !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    .form-control:focus {
+        border-color: #3b82f6 !important;
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* --- BIẾN CHECKBOX THÀNH SWITCH (NÚT GẠT) --- */
+    .switch-container {
+        background: #f8fafc;
+        padding: 15px 20px;
+        border-radius: 15px;
+        border: 1.5px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .switch-container:hover {
+        border-color: #3b82f6;
+        background: #f1f7ff;
+    }
+
+    .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+        transition: background-position 0.15s ease-in-out;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: #10b981;
+        border-color: #10b981;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    }
+
+    /* Danh sách giảng viên (Nếu dùng Multiple Select) */
+    select[multiple] {
+        height: 180px !important;
+        padding: 10px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Nút bấm */
+    .btn-group-custom {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #f8fafc;
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        padding: 12px 35px;
+        border-radius: 12px;
+        font-weight: 700;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-cancel {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .error-msg {
+        color: #ef4444;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="form-container">
+        <div class="form-header">
+            <h2><i class="fas fa-edit text-primary me-2"></i> {{ title }}</h2>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">{{ form.code.label }}</label>
+                    {{ form.code }}
+                    {% if form.code.errors %}<div class="error-msg">{{ form.code.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-8 mb-4">
+                    <label class="form-label">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}<div class="error-msg">{{ form.name.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-12 mb-4">
+                    <label class="form-label">{{ form.lecturers.label }}</label>
+                    <div class="text-muted small mb-2">
+                        <i class="fas fa-info-circle me-1"></i> Giữ Ctrl để chọn nhiều giảng viên.
+                    </div>
+                    {{ form.lecturers }}
+                    {% if form.lecturers.errors %}<div class="error-msg">{{ form.lecturers.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-12 mb-2">
+                    <label class="form-label">Trạng thái lớp học</label>
+                    <div class="form-check form-switch switch-container">
+                        <span class="fw-bold text-dark">
+                            <i class="fas fa-power-off me-2 text-muted"></i> Đang hoạt động
+                        </span>
+                        {{ form.is_active }}
+                    </div>
+                    {% if form.is_active.errors %}<div class="error-msg">{{ form.is_active.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="btn-group-custom">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save me-1"></i> Lưu thông tin
+                </button>
+                <a href="{% url 'class_list' %}" class="btn-cancel text-decoration-none">
+                    Hủy bỏ
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Gán class cho input text và select
+        const inputs = document.querySelectorAll('input[type="text"], select');
+        inputs.forEach(input => input.classList.add('form-control'));
+        
+        // Gán class Switch cho checkbox
+        const checkbox = document.querySelector('input[type="checkbox"]');
+        if(checkbox) {
+            checkbox.classList.add('form-check-input');
+        }
+    });
+</script>
+{% endblock %}

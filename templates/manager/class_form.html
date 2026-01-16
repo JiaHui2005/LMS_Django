@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block title %} Thông tin lớp học {% endblock %}
+
+{% block content %}
+<style>
+    /* Card bọc ngoài form */
+    .form-container {
+        max-width: 850px;
+        margin: 2rem auto;
+        background: #ffffff;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        border: 1px solid #edf2f7;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1a202c;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #4a5568;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    /* --- Ô SEARCH GIẢNG VIÊN --- */
+    .search-wrapper {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input {
+        padding-left: 40px !important;
+        border-radius: 12px !important;
+        border: 2px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
+        font-size: 0.9rem;
+    }
+
+    .search-input:focus {
+        border-color: #3b82f6 !important;
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* --- LECTURER GRID --- */
+    .lecturer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 12px;
+        max-height: 300px; /* Giới hạn chiều cao nếu danh sách quá dài */
+        overflow-y: auto;
+        padding: 5px;
+        border: 1px solid #f1f5f9;
+        border-radius: 12px;
+    }
+
+    .lecturer-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .lecturer-item:hover { border-color: #cbd5e1; }
+
+    .lecturer-item.selected {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .lecturer-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 12px;
+        accent-color: #3b82f6;
+    }
+
+    .lecturer-item label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+        color: #334155;
+    }
+
+    /* --- SWITCH TRẠNG THÁI --- */
+    .status-card {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .status-card.is-active { border-color: #10b981; background: #f0fdf4; }
+
+    .btn-save {
+        background: #3b82f6; color: white; border: none; padding: 12px 40px; border-radius: 12px; font-weight: 700;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="form-container shadow-lg">
+        <div class="form-header mb-4">
+            <h2><i class="fas fa-edit text-primary"></i> {{ title }}</h2>
+        </div>
+
+        <form method="post" novalidate id="classForm">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Mã lớp học</label>
+                    {{ form.code }}
+                </div>
+                <div class="col-md-8 mb-4">
+                    <label class="form-label">Tên lớp học</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="col-12 mb-5">
+                    <div class="d-flex justify-content-between align-items-end mb-3">
+                        <div>
+                            <label class="form-label mb-0">Giảng viên phụ trách</label>
+                            <small class="text-muted d-block mt-1">Chọn giảng viên từ danh sách bên dưới</small>
+                        </div>
+                        <div class="search-wrapper" style="width: 250px; margin-bottom: 0;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="lecturerSearch" class="form-control search-input" placeholder="Tìm tên giảng viên...">
+                        </div>
+                    </div>
+                    
+                    <div class="lecturer-grid" id="lecturerList">
+                        {% for checkbox in form.lecturers %}
+                        <div class="lecturer-item" data-name="{{ checkbox.choice_label|lower }}">
+                            {{ checkbox.tag }}
+                            <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Trạng thái vận hành</label>
+                    <div class="status-card" id="statusCard">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="fas fa-power-off text-muted" id="statusIcon"></i>
+                            <span class="status-text fw-bold" id="statusLabel">Đang hoạt động</span>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            {{ form.is_active }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-top d-flex gap-3">
+                <button type="submit" class="btn-save shadow-sm">
+                    <i class="fas fa-save me-2"></i> Lưu lớp học
+                </button>
+                <a href="{% url 'class_list' %}" class="btn btn-light px-4 py-2 rounded-3 border fw-semibold">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Tự động gán class Bootstrap cho các input text
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            if(!input.classList.contains('search-input')) input.classList.add('form-control');
+        });
+
+        // 1. TÍNH NĂNG TÌM KIẾM (SEARCH)
+        const searchInput = document.getElementById('lecturerSearch');
+        const lecturerItems = document.querySelectorAll('.lecturer-item');
+
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase().trim();
+            
+            lecturerItems.forEach(item => {
+                const name = item.getAttribute('data-name');
+                if (name.includes(term)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // 2. HIỆU ỨNG CHỌN GIẢNG VIÊN (SELECTED STATE)
+        const checkboxes = document.querySelectorAll('.lecturer-item input[type="checkbox"]');
+        
+        function updateLecturerStyle(input) {
+            const parent = input.closest('.lecturer-item');
+            if(input.checked) parent.classList.add('selected');
+            else parent.classList.remove('selected');
+        }
+
+        checkboxes.forEach(input => {
+            updateLecturerStyle(input); // Chạy lúc load
+            input.addEventListener('change', () => updateLecturerStyle(input));
+        });
+
+        // 3. XỬ LÝ SWITCH TRẠNG THÁI
+        const switchInput = document.querySelector('input[name="is_active"]');
+        const statusCard = document.getElementById('statusCard');
+        const statusLabel = document.getElementById('statusLabel');
+        const statusIcon = document.getElementById('statusIcon');
+
+        function updateStatusUI() {
+            switchInput.classList.add('form-check-input');
+            if (switchInput.checked) {
+                statusCard.classList.add('is-active');
+                statusLabel.innerText = "Đang hoạt động";
+                statusIcon.className = "fas fa-power-off text-success";
+            } else {
+                statusCard.classList.remove('is-active');
+                statusLabel.innerText = "Đã kết thúc";
+                statusIcon.className = "fas fa-power-off text-muted";
+            }
+        }
+
+        switchInput.addEventListener('change', updateStatusUI);
+        updateStatusUI();
+    });
+</script>
+{% endblock %}

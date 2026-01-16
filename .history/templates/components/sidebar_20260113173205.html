@@ -1,0 +1,20 @@
+<h5 class="mt-4">TLSP</h5>
+<hr>
+
+{% if user.role == 'manager' %}
+    <a href="/dashboard/manager/" class="text-white d-block mb-2">📊 Tổng quan</a>
+    <a href="/admin/" class="text-white d-block mb-2">👥 Quản lý hệ thống</a>
+
+{% elif user.role == 'lecturer' %}
+    <a href="/classes/lecturer/" class="text-white d-block mb-2">📚 Lớp của tôi</a>
+
+{% elif user.role == 'student' %}
+    <a href="/dashboard/student/" class="text-white d-block mb-2">🎓 Thông tin học tập</a>
+
+{% elif user.role == 'cs' %}
+    <a href="/dashboard/cs/" class="text-white d-block mb-2">📨 Hỗ trợ học viên</a>
+{% endif %}
+
+<a href="{% url 'logout' %}" class="btn btn-danger w-100 mt-3">
+    🚪 Đăng xuất
+</a>

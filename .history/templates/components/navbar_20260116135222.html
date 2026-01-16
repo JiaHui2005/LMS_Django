@@ -1,0 +1,6 @@
+<nav class="navbar navbar-light bg-white shadow-sm px-4">
+    <span class="navbar-text">
+        Xin chào, <strong>{{ user.full_name|default:user.username }}</strong>
+        ({{ user.role }})
+    </span>
+</nav>

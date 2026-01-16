@@ -1,0 +1,26 @@
+<h5 class="mt-3">📚 LMS</h5>
+<hr>
+
+{% if user.is_authenticated %}
+
+    {% if user.role == 'manager' %}
+        <a href="{% url 'manager_dashboard' %}" class="d-block mb-2">📊 Dashboard</a>
+        <a href="/admin/" class="d-block mb-2">⚙️ Quản trị hệ thống</a>
+
+    {% elif user.role == 'lecturer' %}
+            <a href="{% url 'lecturer_dashboard' %}" class="d-block mb-2">
+                👨‍🏫 Dashboard
+            </a>
+            <a hsref="/classes/lecturer/" class="d-block mb-2">
+                📘 Lớp giảng dạy
+            </a>
+
+    {% elif user.role == 'student' %}
+        <a href="{% url 'student_dashboard' %}" class="d-block mb-2">🎓 Dashboard</a>
+
+    {% endif %}
+
+    <hr>
+    <a href="{% url 'logout' %}" class="text-danger d-block">🚪 Đăng xuất</a>
+
+{% endif %}

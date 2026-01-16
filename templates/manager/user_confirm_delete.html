@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Xoá người dùng{% endblock %}
+
+{% block content %}
+<div class="form-card text-center">
+    <h4 class="mb-3 text-danger">⚠ Xác nhận xoá</h4>
+    <p>Bạn có chắc muốn xoá tài khoản <strong>{{ user.username }}</strong> không?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-danger px-4">🗑 Xoá</button>
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Huỷ</a>
+    </form>
+</div>
+{% endblock %}

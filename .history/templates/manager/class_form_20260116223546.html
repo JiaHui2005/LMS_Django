@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% block title %} Thông tin lớp học {% endblock %}
+
+{% block content %}
+<style>
+    /* Card bọc ngoài form */
+    .form-container {
+        max-width: 850px;
+        margin: 2rem auto;
+        background: #ffffff;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        border: 1px solid #edf2f7;
+    }
+
+    .form-header {
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1a202c;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #4a5568;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    /* --- CUSTOM CHECKBOX DANH SÁCH GIẢNG VIÊN --- */
+    .lecturer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .lecturer-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .lecturer-item:hover {
+        border-color: #cbd5e1;
+        background: #f1f5f9;
+    }
+
+    /* Khi checkbox được check thông qua CSS selector */
+    .lecturer-item input[type="checkbox"]:checked + label::before {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .lecturer-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 12px;
+        cursor: pointer;
+        accent-color: #3b82f6;
+    }
+
+    .lecturer-item label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+        color: #334155;
+        flex-grow: 1;
+    }
+
+    /* --- CUSTOM SWITCH TRẠNG THÁI --- */
+    .status-card {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s ease;
+    }
+
+    .status-card.is-active {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+
+    .status-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .status-icon {
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        font-size: 1.1rem;
+        color: #94a3b8;
+        transition: 0.3s;
+    }
+
+    .status-card.is-active .status-icon {
+        color: #10b981;
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-card.is-active .status-text {
+        color: #065f46;
+    }
+
+    .status-text {
+        font-weight: 700;
+        color: #475569;
+    }
+
+    /* Switch toggle */
+    .form-switch .form-check-input {
+        width: 3.5em !important;
+        height: 1.8em !important;
+        cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn-action-group {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f1f5f9;
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn-save {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+
+    .btn-save:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-back {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="form-container">
+        <div class="form-header">
+            <h2><i class="fas fa-graduation-cap text-primary"></i> {{ title }}</h2>
+        </div>
+
+        <form method="post" novalidate id="classForm">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Mã lớp học</label>
+                    {{ form.code }}
+                    {% if form.code.errors %}<div class="text-danger small mt-1">{{ form.code.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-8 mb-4">
+                    <label class="form-label">Tên lớp học</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-12 mb-5">
+                    <label class="form-label">Giảng viên phụ trách</label>
+                    <p class="text-muted small mb-3"><i class="fas fa-info-circle"></i> Đánh dấu vào giảng viên bạn muốn phân công cho lớp này.</p>
+                    
+                    <div class="lecturer-grid">
+                        {% for checkbox in form.lecturers %}
+                        <div class="lecturer-item">
+                            {{ checkbox.tag }}
+                            <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.lecturers.errors %}<div class="text-danger small mt-1">{{ form.lecturers.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-12 mb-2">
+                    <label class="form-label">Trạng thái vận hành</label>
+                    <div class="status-card" id="statusCard">
+                        <div class="status-info">
+                            <div class="status-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <span class="status-text" id="statusLabel">Đang hoạt động</span>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            {{ form.is_active }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-action-group">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-check-circle me-2"></i> Lưu lớp học
+                </button>
+                <a href="{% url 'class_list' %}" class="btn-back">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Tự động gán class Bootstrap cho text inputs
+        const textInputs = document.querySelectorAll('input[type="text"]');
+        textInputs.forEach(input => input.classList.add('form-control'));
+
+        // Xử lý Switch Trạng thái
+        const switchInput = document.querySelector('input[name="is_active"]');
+        const statusCard = document.getElementById('statusCard');
+        const statusLabel = document.getElementById('statusLabel');
+
+        function updateSwitchUI() {
+            switchInput.classList.add('form-check-input');
+            if (switchInput.checked) {
+                statusCard.classList.add('is-active');
+                statusLabel.innerText = "Đang hoạt động";
+            } else {
+                statusCard.classList.remove('is-active');
+                statusLabel.innerText = "Đã tạm dừng / Kết thúc";
+            }
+        }
+
+        switchInput.addEventListener('change', updateSwitchUI);
+        updateSwitchUI();
+
+        // Hiệu ứng chọn Giảng viên
+        const lecturerItems = document.querySelectorAll('.lecturer-item input');
+        lecturerItems.forEach(item => {
+            item.addEventListener('change', function() {
+                if(this.checked) {
+                    this.parentElement.style.borderColor = "#3b82f6";
+                    this.parentElement.style.background = "#eff6ff";
+                } else {
+                    this.parentElement.style.borderColor = "#e2e8f0";
+                    this.parentElement.style.background = "#f8fafc";
+                }
+            });
+            // Chạy kiểm tra lúc load để giữ trạng thái
+            if(item.checked) {
+                item.parentElement.style.borderColor = "#3b82f6";
+                item.parentElement.style.background = "#eff6ff";
+            }
+        });
+    });
+</script>
+{% endblock %}

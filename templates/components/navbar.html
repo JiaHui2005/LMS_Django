@@ -1,0 +1,22 @@
+<nav class="topbar">
+    <div class="topbar-left">
+        <span class="page-title">
+            <i class="fas fa-th-large text-primary"></i> 
+            {{ title|default:"Dashboard" }}
+        </span>
+    </div>
+
+    <div class="topbar-right">
+        <div class="user-avatar">
+            {{ user.username|slice:":1"|upper }}
+        </div>
+        <div class="d-flex flex-column">
+            <span class="user-name">
+                {{ user.full_name|default:user.username }}
+            </span>
+        </div>
+        <span class="user-role">
+            {{ user.role }}
+        </span>
+    </div>
+</nav>

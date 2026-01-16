@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TLSP{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --top-nav-height: 70px;
+            --bg-body: #f4f7fe;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Container tổng quát */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar đã được CSS ở bước trước, đảm bảo width khớp */
+        .sidebar {
+            width: var(--sidebar-width);
+            flex-shrink: 0;
+        }
+
+        /* Phần Main Content bên phải */
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width); /* Đẩy nội dung sang phải để không bị sidebar che */
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Tránh lỗi vỡ layout với flexbox */
+            transition: all 0.3s ease;
+        }
+
+        /* Navbar trên cùng */
+        .navbar-custom {
+            height: var(--top-nav-height);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px); /* Hiệu ứng kính mờ hiện đại */
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        /* Vùng nội dung trang */
+        .page-content {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        /* Hiệu ứng mượt mà cho các liên kết */
+        a {
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        /* Tùy chỉnh thanh cuộn (Scrollbar) */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Responsive cho thiết bị di động */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .app-container.show-sidebar .sidebar {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    {% include 'components/sidebar.html' %}
+
+    <div class="main-content">
+        <nav class="navbar-custom">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+                <span class="text-muted fw-medium">Hệ thống Quản lý Học tập</span>
+                <div class="user-profile d-flex align-items-center gap-3">
+                    <span class="fw-semibold text-dark">{{ user.username }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0D6EFD&color=fff" 
+                         alt="avatar" class="rounded-circle" width="35">
+                </div>
+            </div>
+        </nav>
+
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        🎓 <span>LMS</span>
+    </div>
+
+    <ul class="sidebar-menu">
+        {% if user.role == 'manager' %}
+            <li>
+                <a href="{% url 'manager_dashboard' %}" class="{% if request.path == '/dashboard/manager/' %}active{% endif %}">
+                    📊 <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'user_list' %}">
+                    👥 <span>Người dùng</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if user.role == 'lecturer' %}
+            <li>
+                <a href="{% url 'lecturer_dashboard' %}">
+                    👨‍🏫 <span>Giảng viên</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if user.role == 'student' %}
+            <li>
+                <a href="{% url 'student_dashboard' %}">
+                    🎓 <span>Sinh viên</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if user.role == 'coordinator' %}
+            <li>
+                <a href="{% url 'coordinator_dashboard' %}">
+                    🧭 <span>Điều phối</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'logout' %}" class="logout">
+            🚪 <span>Đăng xuất</span>
+        </a>
+    </div>
+</aside>

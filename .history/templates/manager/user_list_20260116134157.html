@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>👥 Quản lý người dùng</h2>
+
+<a href="{% url 'user_create' %}" class="btn btn-primary mb-3">
+    ➕ Tạo tài khoản
+</a>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Username</th>
+        <th>Họ tên</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+    </tr>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.username }}</td>
+        <td>{{ u.full_name }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.get_role_display }}</td>
+        <td>
+            {% if u.is_active %}
+                <span class="badge bg-success">Hoạt động</span>
+            {% else %}
+                <span class="badge bg-secondary">Khóa</span>
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'user_edit' u.id %}" class="btn btn-sm btn-warning">✏️</a>
+            <a href="{% url 'user_delete' u.id %}" class="btn btn-sm btn-danger">🗑️</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
