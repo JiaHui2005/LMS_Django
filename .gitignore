@@ -21,3 +21,6 @@ staticfiles/
 
 # Logs
 *.log
+
+#Hisory files
+*.history
