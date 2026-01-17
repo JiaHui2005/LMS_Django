@@ -7,6 +7,7 @@ from apps.classes.models import Class
 from .models import ClassSchedule
 from .forms import ClassScheduleForm, MakeupScheduleForm, ScheduleStatusForm, BulkScheduleForm
 from datetime import timedelta
+from django.utils import timezone
 
 # Create your views here.
 
@@ -106,7 +107,7 @@ def class_schedule_bulk_create(request, class_id):
                 request,
                 f'Đã tạo {created} buổi học.'
             )
-            return redirect('class_schedule_list', class_is=classroom.id)
+            return redirect('class_schedule_list', class_id=classroom.id)
     else:
         form = BulkScheduleForm()
             
@@ -224,3 +225,36 @@ def class_schedule_makeup(request, class_id, schedule_id):
     }
 
     return render(request, 'manager/schedules/makeup_form.html', context)
+
+# Lay lich hoc calendar sinh vien
+@login_required
+def student_schedule_calendar(request):
+    user = request.user
+    
+    week_offset = int(request.GET.get('week', 0))
+    
+    today = timezone.localdate()
+    start_of_week = today - timedelta(days=today.weekday())
+    start_of_week += timedelta(weeks=week_offset)
+    
+    week_days = [start_of_week + timedelta(days=i) for i in range(7)]
+    
+    enrollments = Enrollment.objects.filter(student = user)
+    classes = [e.class_obj for e in enrollments]
+    
+    schedules = ClassSchedule.objects.filter(
+        classroom__in=classes,
+        date__range=(week_days[0], week_days[-1])
+    ) .select_related('classroom')
+    
+    schedules_by_day = {day: [] for day in week_days}
+    for s in schedules:
+        schedules_by_day[s.date].append(s)
+        
+    context = {
+        'week_days': week_days,
+        'schedules_by_day': schedules_by_day,
+        'week_offset': week_offset,
+    }
+    
+    return render(request, 'student/schedule.html', context)

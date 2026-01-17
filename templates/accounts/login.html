@@ -3,137 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập TLSP</title>
+    <title>Đăng nhập | LMS CENTER</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --input-focus: #764ba2;
+            /* Tông màu Xanh da trời mới */
+            --primary-blue: #0ea5e9;
+            --deep-blue: #0369a1;
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            --button-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --font-main: 'Inter', sans-serif;
         }
 
         body {
-            /* Nền gradient mượt mà */
-            background: var(--primary-gradient);
+            /* Nền xanh nhạt mượt mà */
+            background: var(--bg-gradient);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-main);
             margin: 0;
         }
 
         .login-card {
             background: #ffffff;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(3, 105, 161, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
             transition: transform 0.3s ease;
         }
 
         .login-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
         }
 
         .brand-logo {
-            font-size: 3rem;
-            color: #764ba2;
-            margin-bottom: 1rem;
-            display: block;
-            text-align: center;
+            width: 70px;
+            height: 70px;
+            background: #f0f9ff;
+            color: var(--primary-blue);
+            font-size: 2.2rem;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(14, 165, 233, 0.1);
         }
 
         .login-card h4 {
             font-weight: 800;
-            color: #1a202c;
+            color: #0f172a;
             margin-bottom: 0.5rem;
             text-align: center;
+            letter-spacing: -0.5px;
         }
 
         .login-card p {
-            color: #718096;
-            font-size: 0.9rem;
+            color: #64748b;
+            font-size: 0.95rem;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
 
-        /* Tùy chỉnh Input */
+        /* Input Styles */
         .form-group-custom {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-group-custom i {
             position: absolute;
-            left: 15px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #a0aec0;
+            color: #94a3b8;
             transition: color 0.3s;
         }
 
         .form-control-custom {
             width: 100%;
-            padding: 12px 15px 12px 45px;
-            border-radius: 12px;
-            border: 2px solid #edf2f7;
+            padding: 14px 15px 14px 50px;
+            border-radius: 14px;
+            border: 2px solid #f1f5f9;
             background: #f8fafc;
             font-weight: 500;
+            color: #1e293b;
             transition: all 0.3s;
         }
 
+        .form-control-custom::placeholder {
+            color: #94a3b8;
+        }
+
         .form-control-custom:focus {
-            border-color: var(--input-focus);
+            border-color: var(--primary-blue);
             background: #fff;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
         }
 
         .form-control-custom:focus + i {
-            color: var(--input-focus);
+            color: var(--primary-blue);
         }
 
-        /* Nút đăng nhập */
+        /* Nút đăng nhập Xanh da trời */
         .btn-login {
-            background: var(--primary-gradient);
+            background: var(--button-gradient);
             border: none;
             color: white;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 14px;
             font-weight: 700;
             width: 100%;
             letter-spacing: 0.5px;
-            margin-top: 1rem;
-            transition: opacity 0.3s, transform 0.2s;
+            margin-top: 1.5rem;
+            box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
         }
 
         .btn-login:hover {
-            opacity: 0.9;
-            color: white;
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(14, 165, 233, 0.5);
         }
 
         .btn-login:active {
             transform: scale(0.98);
         }
 
-        /* Footer card */
+        /* Footer */
         .login-footer {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             font-size: 0.85rem;
             text-align: center;
-            color: #718096;
+            color: #94a3b8;
+        }
+
+        .login-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <span class="brand-logo">🎓</span>
+    <div class="brand-logo">
+        <i class="fas fa-graduation-cap"></i>
+    </div>
     <h4>Chào mừng quay lại!</h4>
-    <p>Hệ thống Quản lý Học tập TLSP</p>
+    <p>Hệ thống Quản lý Học tập <strong>LMS CENTER</strong></p>
 
     <form method="post">
         {% csrf_token %}
@@ -149,12 +181,12 @@
         </div>
 
         <button type="submit" class="btn-login">
-            ĐĂNG NHẬP <i class="fas fa-arrow-right ms-2"></i>
+            ĐĂNG NHẬP <i class="fas fa-sign-in-alt ms-2"></i>
         </button>
     </form>
 
     <div class="login-footer">
-        Quên mật khẩu? Liên hệ quản trị viên
+        Quên mật khẩu? <a href="#">Liên hệ quản trị viên</a>
     </div>
 </div>
 

@@ -1,26 +1,157 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}Chi tiết lớp: {{ classroom.name }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<style>
+    /* 1. Container chính */
+    .detail-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
+    }
 
-    <h2>🏫 {{ classroom.name }}</h2>
+    /* 2. Header phong cách Portal */
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #f0f9ff;
+        padding-bottom: 2rem;
+        margin-bottom: 2.5rem;
+    }
 
-    <p><strong>Mã lớp:</strong> {{ classroom.code }}</p>
+    .class-title h2 {
+        font-weight: 800;
+        color: #0369a1; /* Xanh da trời đậm */
+        margin-bottom: 0.5rem;
+    }
 
-    <h5 class="mt-4">👨‍🏫 Giảng viên</h5>
-    <ul>
-        {% for l in classroom.lecturers.all %}
-            <li>{{ l.full_name }}</li>
-        {% empty %}
-            <li>Chưa phân công</li>
-        {% endfor %}
-    </ul>
+    .class-code-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: 1px solid #bae6fd;
+    }
 
-    <h5 class="mt-4">📌 Điểm danh</h5>
-    <p>(Sẽ cập nhật)</p>
+    /* 3. Grid thông tin (Cards) */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
 
-    <h5 class="mt-4">📊 Điểm</h5>
-    <p>(Sẽ cập nhật)</p>
+    .info-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
 
+    .info-card:hover {
+        border-color: #0ea5e9;
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(14, 165, 233, 0.05);
+    }
+
+    .card-icon {
+        width: 45px;
+        height: 45px;
+        background: #f0f9ff;
+        color: #0ea5e9;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .info-card h5 {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    /* 4. List Giảng viên */
+    .lecturer-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .lecturer-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .lecturer-item i {
+        color: #0ea5e9;
+        font-size: 0.8rem;
+    }
+
+    /* 5. Placeholder text */
+    .coming-soon {
+        color: #94a3b8;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="detail-container">
+        <div class="detail-header">
+            <div class="class-title">
+                <h2><i class="fas fa-university me-2"></i>{{ classroom.name }}</h2>
+                <span class="class-code-badge">Mã lớp: {{ classroom.code }}</span>
+            </div>
+            <a href="{% url 'student_my_classes' %}" class="btn btn-light border rounded-3 fw-bold px-4">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
+
+        
+
+        <div class="info-grid">
+            
+            <div class="info-card">
+                <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <h5>Giảng viên phụ trách</h5>
+                <ul class="lecturer-list">
+                    {% for l in classroom.lecturers.all %}
+                        <li class="lecturer-item">
+                            <i class="fas fa-check-circle"></i> {{ l.full_name }}
+                        </li>
+                    {% empty %}
+                        <li class="lecturer-item coming-soon">Chưa phân công giảng viên</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon" style="background: #f0fdf4; color: #10b981;"><i class="fas fa-user-check"></i></div>
+                <h5>Tình hình điểm danh</h5>
+                <p class="coming-soon mb-0">Hệ thống đang đồng bộ dữ liệu điểm danh...</p>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon" style="background: #fffbeb; color: #f59e0b;"><i class="fas fa-star"></i></div>
+                <h5>Kết quả học tập</h5>
+                <p class="coming-soon mb-0">Điểm số sẽ được cập nhật sau khi kết thúc môn học.</p>
+            </div>
+
+        </div>
+    </div>
 </div>
 {% endblock %}

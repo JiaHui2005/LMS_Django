@@ -169,6 +169,31 @@
                     📝 <span>Đăng ký lớp học</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{% url 'student_notifications' %}"
+                   class="{% if 'student_notifications' == url_name %}active{% endif %}"
+                   style="position: relative;">
+                    🔔 <span>Thông báo</span>
+            
+                    {% if unread_notification_count > 0 %}
+                        <span style="
+                            position: absolute;
+                            top: 6px;
+                            right: 12px;
+                            background-color: #dc3545;
+                            color: white;
+                            border-radius: 50%;
+                            padding: 2px 7px;
+                            font-size: 12px;
+                            font-weight: bold;
+                        ">
+                            {{ unread_notification_count }}
+                        </span>
+                    {% endif %}
+                </a>
+            </li>
+
         {% endif %}
 
 

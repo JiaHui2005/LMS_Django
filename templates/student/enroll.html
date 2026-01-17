@@ -1,45 +1,186 @@
 {% extends "base.html" %}
 
+{% block title %}Đăng ký lớp học{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
+<style>
+    /* 1. Container đồng bộ hệ thống */
+    .enroll-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-top: 1rem;
+    }
 
-    <h2>📝 Đăng ký lớp học</h2>
+    /* 2. Tiêu đề Xanh da trời */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
 
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>Lớp</th>
-                <th>Giảng viên</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in classes %}
-            <tr>
-                <td>{{ c.name }}</td>
-                <td>
-                    {% for l in c.lecturers.all %}
-                        {{ l.full_name }}<br>
+    .header-section h2 {
+        color: #0369a1; /* Xanh da trời đậm */
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* 3. Thiết kế bảng hàng ngang (Row-based) */
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Khoảng cách giữa các hàng */
+    }
+
+    .table-custom thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .table-custom tbody tr:hover {
+        transform: scale(1.005);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .table-custom td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    /* Bo góc cho hàng */
+    .table-custom td:first-child { 
+        border-left: 1px solid #f1f5f9; 
+        border-radius: 12px 0 0 12px; 
+        font-weight: 700;
+        color: #0284c7;
+    }
+    
+    .table-custom td:last-child { 
+        border-right: 1px solid #f1f5f9; 
+        border-radius: 0 12px 12px 0; 
+    }
+
+    /* 4. Thành phần trang trí */
+    .lecturer-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .lecturer-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #475569;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .lecturer-name i {
+        color: #0ea5e9;
+        font-size: 0.8rem;
+    }
+
+    /* Nút Đăng ký (Xanh da trời nổi bật) */
+    .btn-enroll {
+        background: #0ea5e9; /* Blue Sky */
+        color: white;
+        border-radius: 10px;
+        padding: 8px 20px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-enroll:hover {
+        background: #0284c7;
+        color: white;
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .empty-msg {
+        padding: 3rem;
+        color: #94a3b8;
+        font-style: italic;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="enroll-container shadow-sm">
+        <div class="header-section">
+            <h2><i class="fas fa-edit"></i> Đăng ký lớp học</h2>
+            <a href="{% url 'student_my_classes' %}" class="btn btn-light border rounded-3 fw-bold">
+                Lớp học của tôi <i class="fas fa-chevron-right ms-1"></i>
+            </a>
+        </div>
+
+        
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Tên lớp học</th>
+                        <th>Giảng viên</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in classes %}
+                    <tr>
+                        <td style="width: 40%;">{{ c.name }}</td>
+                        <td style="width: 40%;">
+                            <div class="lecturer-info">
+                                {% for l in c.lecturers.all %}
+                                    <div class="lecturer-name">
+                                        <i class="fas fa-user-circle"></i> {{ l.full_name }}
+                                    </div>
+                                {% empty %}
+                                    <span class="text-muted small">Đang cập nhật giảng viên</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'student_enroll_class' c.id %}" class="btn-enroll">
+                                <i class="fas fa-plus-circle"></i> Đăng ký ngay
+                            </a>
+                        </td>
+                    </tr>
                     {% empty %}
-                        Chưa phân công
+                    <tr>
+                        <td colspan="3" class="text-center empty-msg">
+                            <i class="fas fa-info-circle me-2"></i>Hiện tại không có lớp học nào khả dụng để đăng ký.
+                        </td>
+                    </tr>
                     {% endfor %}
-                </td>
-                <td>
-                    <a href="{% url 'student_enroll_class' c.id %}"
-                       class="btn btn-success btn-sm">
-                        Đăng ký
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center">
-                    Không có lớp nào để đăng ký
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

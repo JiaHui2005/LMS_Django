@@ -47,18 +47,6 @@ def enter_grade(request, class_id):
         'enrollments': enrollments
     })
        
-# Dashboard Sinh vien
-@login_required
-@role_required('student')
-def student_dashboard(request):
-    enrollments = Enrollment.objects.filter(student=request.user)
-    
-    context = {
-        'enrollments': enrollments
-    }
-    
-    return render(request, 'student/dashboard.html', context)
-
 # Sinh vien xem lop hoc cua chinh minh
 @login_required
 @role_required('student')
@@ -77,8 +65,13 @@ def my_classes(request):
 def class_detail(request, class_id):
     enrollment = get_object_or_404(Enrollment, student=request.user, class_obj_id=class_id)
     
+    classroom = enrollment.class_obj
+    lecturers = classroom.lecturers
+    
     context = {
-        'enrollment': enrollment
+        'enrollment': enrollment,
+        'classroom': classroom,
+        'lecturers': lecturers
     }
     
     return render(request, 'student/class_detail.html', context)

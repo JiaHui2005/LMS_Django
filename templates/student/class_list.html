@@ -1,45 +1,172 @@
 {% extends "base.html" %}
 
+{% block title %}Danh sách lớp học của tôi{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
+<style>
+    /* 1. Container chính đồng bộ hệ thống */
+    .table-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-top: 1rem;
+    }
 
-    <h2>📚 Lớp học của tôi</h2>
+    /* 2. Tiêu đề với màu xanh chủ đạo */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
 
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>Lớp</th>
-                <th>Giảng viên</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in enrollments %}
-            <tr>
-                <td>{{ e.class_obj.name }}</td>
-                <td>
-                    {% for l in e.class_obj.lecturers.all %}
-                        {{ l.full_name }}<br>
+    .header-section h2 {
+        color: #0369a1; /* Xanh da trời đậm */
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* 3. Thiết kế bảng hàng ngang (Row-based) */
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px; /* Khoảng cách giữa các hàng */
+    }
+
+    .table-custom thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .table-custom tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-custom td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    /* Bo góc cho hàng đầu và cuối của mỗi dòng */
+    .table-custom td:first-child { 
+        border-left: 1px solid #f1f5f9; 
+        border-radius: 16px 0 0 16px; 
+        font-weight: 700;
+        color: #0284c7;
+    }
+    
+    .table-custom td:last-child { 
+        border-right: 1px solid #f1f5f9; 
+        border-radius: 0 16px 16px 0; 
+    }
+
+    /* 4. Thành phần trang trí */
+    .lecturer-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f0f9ff;
+        color: #0369a1;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn-detail {
+        background: #0ea5e9; /* Blue Sky */
+        color: white;
+        border-radius: 10px;
+        padding: 8px 18px;
+        font-weight: 700;
+        border: none;
+        transition: 0.3s;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .btn-detail:hover {
+        background: #0284c7;
+        color: white;
+        box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+    }
+
+    .empty-state {
+        padding: 4rem 0;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="table-container">
+        <div class="header-section">
+            <h2><i class="fas fa-graduation-cap"></i> Lớp học của tôi</h2>
+            <a href="{% url 'student_dashboard' %}" class="btn btn-light border rounded-3 fw-bold px-3">
+                <i class="fas fa-chevron-left me-1"></i> Quay lại
+            </a>
+        </div>
+
+        
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Tên lớp học</th>
+                        <th>Giảng viên phụ trách</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in enrollments %}
+                    <tr>
+                        <td>{{ e.class_obj.name }}</td>
+                        <td>
+                            {% for l in e.class_obj.lecturers.all %}
+                                <div class="lecturer-badge mb-1">
+                                    <i class="fas fa-user-tie"></i> {{ l.full_name }}
+                                </div>
+                            {% empty %}
+                                <span class="text-muted small italic">Chưa phân công giảng viên</span>
+                            {% endfor %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'student_class_detail' e.class_obj.id %}" class="btn-detail">
+                                <i class="fas fa-eye me-1"></i> Xem chi tiết
+                            </a>
+                        </td>
+                    </tr>
                     {% empty %}
-                        Chưa phân công
+                    <tr>
+                        <td colspan="3" class="text-center empty-state">
+                            <i class="fas fa-folder-open fa-3x mb-3 opacity-20"></i>
+                            <p class="mb-0 fw-bold">Bạn chưa đăng ký lớp học nào trong hệ thống.</p>
+                        </td>
+                    </tr>
                     {% endfor %}
-                </td>
-                <td>
-                    <a href="{% url 'student_class_detail' e.class_obj.id %}"
-                       class="btn btn-sm btn-primary">
-                        Chi tiết
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center">
-                    Bạn chưa đăng ký lớp nào
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

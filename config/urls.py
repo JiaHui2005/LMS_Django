@@ -69,10 +69,13 @@ urlpatterns = [
     
     # Student
     path('student/classes/', academic_views.my_classes, name='student_my_classes'),
-    path('student/schedule/', schedule_views.student_schedule, name='student_schedule'),
+    path('student/schedule/', schedule_views.student_schedule_calendar, name='student_schedule'),
     path('student/classes/<int:class_id>/', academic_views.class_detail, name='student_class_detail'),
     path('student/enroll/', class_views.enroll_list, name='student_enroll'),
     path('student/enroll/<int:class_id>/', class_views.enroll_class, name='student_enroll_class'),
+    path('student/notifications/', notification_views.student_notification_list, name='student_notifications'),
+    path('student/notifications/<int:notification_id>/read/', notification_views.make_notification_read, name='mark_notification_read'),
+
 ]
 
 

@@ -62,8 +62,6 @@
     .table-custom td:first-child {
         border-left: 1px solid #f1f5f9;
         border-radius: 16px 0 0 16px;
-        font-weight: 700;
-        color: #2563eb;
     }
 
     .table-custom td:last-child {
@@ -138,7 +136,7 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th>Thứ</th>
+                        <th>Ngày học</th>
                         <th>Thời gian</th>
                         <th>Phòng</th>
                         <th>Trạng thái</th>
@@ -148,16 +146,35 @@
                 <tbody>
                     {% for s in schedules %}
                     <tr>
-                        <td>{{ s.get_day_of_week_display }}</td>
+                        <!-- NGÀY + THỨ -->
+                        <td>
+                            <div class="fw-semibold">
+                                📅 {{ s.date|date:"d/m/Y" }}
+                            </div>
+                            <div class="text-muted small">
+                                {{ s.get_day_of_week_display }}
+                            </div>
 
+                            {% if s.status == 'makeup' %}
+                                <span class="badge bg-warning text-dark mt-1">
+                                    Buổi bù
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- THỜI GIAN -->
                         <td>
                             <span class="time-badge">
                                 ⏰ {{ s.start_time|time:"H:i" }} – {{ s.end_time|time:"H:i" }}
                             </span>
                         </td>
 
-                        <td>🏫 {{ s.room|default:"Chưa sắp phòng" }}</td>
+                        <!-- PHÒNG -->
+                        <td>
+                            🏫 {{ s.room|default:"Chưa sắp phòng" }}
+                        </td>
 
+                        <!-- TRẠNG THÁI -->
                         <td>
                             {% if s.status == 'scheduled' %}
                                 <span class="badge bg-success">Đã lên lịch</span>
@@ -168,6 +185,7 @@
                             {% endif %}
                         </td>
 
+                        <!-- ACTION -->
                         <td class="text-center">
                             <a href="{% url 'class_schedule_edit' classroom.id s.id %}"
                                class="action-btn btn-edit" title="Chỉnh sửa">

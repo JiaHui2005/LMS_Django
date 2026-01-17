@@ -1,46 +1,225 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load dict_extras %}
+{% block title %}Thời khóa biểu{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<style>
+    /* 1. Container chính dãn rộng */
+    .calendar-container {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+        width: 100%;
+    }
 
-    <h2 class="mb-3">🗓️ Thời khóa biểu</h2>
+    /* 2. Header phong cách tối giản */
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
 
-    {% if enrollments %}
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Lớp</th>
-                    <th>Giảng viên</th>
-                    <th>Trạng thái lớp</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for e in enrollments %}
-                <tr>
-                    <td>{{ e.class_obj.name }}</td>
-                    <td>
-                        {% for l in e.class_obj.lecturers.all %}
-                            {{ l.full_name }}<br>
-                        {% empty %}
-                            Chưa phân công
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% if e.class_obj.is_active %}
-                            <span class="badge bg-success">Đang học</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Đã kết thúc</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-info">
-            Bạn chưa đăng ký lớp học nào.
+    .calendar-header h2 {
+        font-weight: 800;
+        color: #0369a1; /* Xanh da trời đậm */
+        font-size: 1.75rem;
+        margin: 0;
+    }
+
+    /* 3. Bảng thời khóa biểu phong cách phẳng */
+    .calendar-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Chia đều các cột 14.28% */
+        border: 1px solid #cbd5e1;
+    }
+
+    .calendar-table th {
+        background-color: #0ea5e9; /* Xanh da trời (Sky Blue) */
+        color: #ffffff;
+        padding: 12px 5px;
+        text-align: center;
+        border: 1px solid #ffffff44;
+        font-size: 0.9rem;
+    }
+
+    .day-name { display: block; font-weight: 700; text-transform: uppercase; }
+    .day-date { display: block; font-size: 0.8rem; font-weight: 400; }
+
+    .calendar-table td {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        vertical-align: top;
+        padding: 6px;
+        min-height: 200px;
+    }
+
+    /* 4. Thẻ buổi học (Nằm ngang, dãn rộng) */
+    .schedule-item {
+        display: block;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        cursor: pointer;
+        color: #ffffff;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .schedule-item:hover {
+        filter: brightness(0.92);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .class-name {
+        font-weight: 700;
+        display: block;
+        margin-bottom: 4px;
+        line-height: 1.3;
+        font-size: 0.9rem;
+    }
+
+    .class-info {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        opacity: 0.9;
+    }
+
+    /* 5. CÁC TÔNG MÀU TRẠNG THÁI */
+    
+    /* Mặc định: Xanh da trời */
+    .item-default {
+        background-color: #38bdf8; 
+    }
+
+    /* Học bù: Màu Vàng (Amber) */
+    .item-makeup {
+        background-color: #fbbf24 !important; /* Vàng đậm */
+        color: #ffffff !important;
+        border-color: #d97706 !important;
+    }
+
+    /* Báo vắng: Màu Đỏ */
+    .item-cancelled {
+        background-color: #ef4444 !important; 
+        color: #ffffff !important;
+        border-color: #b91c1c !important;
+    }
+
+    .status-alert {
+        display: block;
+        margin-top: 6px;
+        font-weight: 800;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        background: rgba(0,0,0,0.15); /* Làm tối nền badge một chút cho dễ đọc */
+        padding: 2px;
+        border-radius: 4px;
+    }
+
+    /* Highlight ngày hôm nay */
+    .today-cell { background-color: #f0f9ff !important; }
+    .today-header { background-color: #0284c7 !important; border-bottom: 4px solid #facc15 !important; }
+
+</style>
+
+<div class="container-fluid py-3">
+    <div class="calendar-container shadow-sm">
+        
+        <div class="calendar-header">
+            <h2><i class="fas fa-calendar-alt me-2"></i>Thời khóa biểu tuần</h2>
+
+            <div class="d-flex gap-2 align-items-center">
+                <div class="btn-group">
+                    <a href="?week={{ week_offset|add:'-1' }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    <a href="?week=0" class="btn btn-sm btn-primary fw-bold px-3">Hiện tại</a>
+                    <a href="?week={{ week_offset|add:'1' }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-    {% endif %}
 
+        <div class="table-responsive">
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        {% for day in week_days %}
+                        <th class="day-col" data-date="{{ day|date:'d/m' }}">
+                            <span class="day-name">{{ day|date:"l" }}</span>
+                            <span class="day-date">({{ day|date:"d/m/Y" }})</span>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        {% for day in week_days %}
+                        <td class="cell-col" data-date="{{ day|date:'d/m' }}">
+                            {% for s in schedules_by_day|get_item:day %}
+                                <div class="schedule-item 
+                                    {% if s.status == 'cancelled' %}item-cancelled
+                                    {% elif s.status == 'makeup' %}item-makeup
+                                    {% else %}item-default{% endif %}
+                                ">
+                                    <span class="class-name">{{ s.classroom.name }}</span>
+                                    
+                                    <span class="class-info">
+                                        <i class="far fa-clock"></i> {{ s.start_time|time:"H:i" }} - {{ s.end_time|time:"H:i" }}
+                                    </span>
+                                    
+                                    <span class="class-info">
+                                        <i class="fas fa-map-marker-alt"></i> {{ s.room }}
+                                    </span>
+
+                                    {% if s.status == 'cancelled' %}
+                                        <span class="status-alert">Giảng viên báo vắng</span>
+                                    {% endif %}
+                                    
+                                    {% if s.status == 'makeup' %}
+                                        <span class="status-alert">Học bù</span>
+                                    {% endif %}
+                                </div>
+                            {% empty %}
+                                {% endfor %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const now = new Date();
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const todayStr = `${d}/${m}`;
+
+        const headers = document.querySelectorAll('.day-col');
+        const cells = document.querySelectorAll('.cell-col');
+
+        headers.forEach((th, index) => {
+            if (th.getAttribute('data-date') === todayStr) {
+                th.classList.add('today-header');
+                if (cells[index]) {
+                    cells[index].classList.add('today-cell');
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

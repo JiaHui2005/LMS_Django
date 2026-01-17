@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from common.decorators import role_required
 from .forms import NotificationForm
-from .models import Notification
+from .models import Notification, NotificationUser
+from django.db import models
+from django.utils import timezone
 
 # Create your views here.
 
@@ -86,8 +88,46 @@ def notification_toggle(request, notification_id):
     
     return redirect('notification_list')
      
-   
-            
+# Load thong bao cho sinh vien
+@login_required
+@role_required('student')
+def student_notification_list(request):
+    notifications = Notification.objects.filter(
+        is_active=True
+    ).filter(
+        models.Q(target='all') | models.Q(target='student')
+    ).order_by('-created_at')
+    
+    read_ids = set(
+        NotificationUser.objects.filter(
+            user=request.user,
+            is_read=True
+        ).values_list('notification_id', flat=True)
+    )
+    
+    context = {
+        'notifications': notifications,
+        'read_ids': read_ids
+    }
+    
+    return render(request, 'student/notifications.html', context)
+
+# Sinh vien danh dau da doc thong bao
+@login_required
+@role_required('student')
+def make_notification_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, is_active=True)
+    
+    NotificationUser.objects.get_or_create(
+        user=request.user,
+        notification=notification,
+        defaults={
+            'is_read': True,
+            'read_at': timezone.now()
+        }
+    ) 
+        
+    return redirect('student_notifications')
         
         
             
