@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% block title %}Lịch học - {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .table-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    .header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        gap: 20px;
+    }
+
+    .header-group h2 {
+        font-weight: 800;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+    .table-custom thead th {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0 1rem;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background: #fff;
+        transition: 0.2s;
+    }
+
+    .table-custom tbody tr:hover {
+        transform: scale(1.005);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .table-custom td {
+        padding: 1.25rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .table-custom td:first-child {
+        border-left: 1px solid #f1f5f9;
+        border-radius: 16px 0 0 16px;
+        font-weight: 700;
+        color: #2563eb;
+    }
+
+    .table-custom td:last-child {
+        border-right: 1px solid #f1f5f9;
+        border-radius: 0 16px 16px 0;
+    }
+
+    .time-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 0 2px;
+        border: none;
+        text-decoration: none;
+    }
+
+    .btn-edit { background: #fffbeb; color: #92400e; }
+    .btn-delete { background: #fef2f2; color: #991b1b; }
+    .btn-warning { background: #fef3c7; color: #92400e; }
+    .btn-success { background: #ecfdf5; color: #065f46; }
+
+    .btn-nav {
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="table-container">
+
+        <!-- HEADER -->
+        <div class="header-group">
+            <h2>📅 Lịch học: {{ classroom.name }}</h2>
+
+            <div class="d-flex gap-2">
+                <a href="{% url 'class_list' %}" class="btn btn-light border btn-nav">
+                    ← Danh sách lớp
+                </a>
+
+                <a href="{% url 'class_schedule_create' classroom.id %}"
+                   class="btn btn-primary btn-nav">
+                    + Thêm buổi
+                </a>
+
+                <a href="{% url 'class_schedule_bulk_create' classroom.id %}"
+                   class="btn btn-success btn-nav">
+                    ⚡ Tạo nhiều buổi
+                </a>
+            </div>
+        </div>
+
+        {% if schedules %}
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Thứ</th>
+                        <th>Thời gian</th>
+                        <th>Phòng</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in schedules %}
+                    <tr>
+                        <td>{{ s.get_day_of_week_display }}</td>
+
+                        <td>
+                            <span class="time-badge">
+                                ⏰ {{ s.start_time|time:"H:i" }} – {{ s.end_time|time:"H:i" }}
+                            </span>
+                        </td>
+
+                        <td>🏫 {{ s.room|default:"Chưa sắp phòng" }}</td>
+
+                        <td>
+                            {% if s.status == 'scheduled' %}
+                                <span class="badge bg-success">Đã lên lịch</span>
+                            {% elif s.status == 'cancelled' %}
+                                <span class="badge bg-danger">Giảng viên vắng</span>
+                            {% elif s.status == 'makeup' %}
+                                <span class="badge bg-warning text-dark">Buổi bù</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center">
+                            <a href="{% url 'class_schedule_edit' classroom.id s.id %}"
+                               class="action-btn btn-edit" title="Chỉnh sửa">
+                                ✏️
+                            </a>
+
+                            <a href="{% url 'schedule_update_status' s.id %}"
+                               class="action-btn btn-warning" title="Báo vắng">
+                                🚨
+                            </a>
+
+                            {% if s.status == 'cancelled' %}
+                            <a href="{% url 'class_schedule_makeup' classroom.id s.id %}"
+                               class="action-btn btn-success" title="Tạo buổi bù">
+                                ➕
+                            </a>
+                            {% endif %}
+
+                            <a href="{% url 'class_schedule_delete' classroom.id s.id %}"
+                               class="action-btn btn-delete"
+                               onclick="return confirm('Xóa buổi học này?')" title="Xóa">
+                                🗑
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <p>Chưa có buổi học nào cho lớp này.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

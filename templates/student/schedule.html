@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-3">🗓️ Thời khóa biểu</h2>
+
+    {% if enrollments %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Lớp</th>
+                    <th>Giảng viên</th>
+                    <th>Trạng thái lớp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in enrollments %}
+                <tr>
+                    <td>{{ e.class_obj.name }}</td>
+                    <td>
+                        {% for l in e.class_obj.lecturers.all %}
+                            {{ l.full_name }}<br>
+                        {% empty %}
+                            Chưa phân công
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if e.class_obj.is_active %}
+                            <span class="badge bg-success">Đang học</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Đã kết thúc</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">
+            Bạn chưa đăng ký lớp học nào.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -2,54 +2,137 @@
 {% block title %}Dashboard Sinh viên{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">🎓 Dashboard Sinh viên</h2>
+<style>
+    /* Tiêu đề chào mừng */
+    .welcome-section {
+        margin-bottom: 2.5rem;
+    }
 
-<h4>📘 Lớp đã đăng ký</h4>
-<ul>
-    {% for e in enrollments %}
-        <li>{{ e.class_obj.name }}</li>
-    {% empty %}
-        <li>Chưa đăng ký lớp nào</li>
-    {% endfor %}
-</ul>
+    .welcome-text {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 1.75rem;
+        letter-spacing: -0.5px;
+    }
 
-<hr>
+    /* Tùy chỉnh Card Thống kê */
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 100%;
+    }
 
-<h4>🧮 Điểm số</h4>
-<table class="table">
-    <tr>
-        <th>Lớp</th>
-        <th>Thành phần</th>
-        <th>Điểm</th>
-    </tr>
-    {% for g in grades %}
-    <tr>
-        <td>{{ g.class_obj.name }}</td>
-        <td>{{ g.component }}</td>
-        <td>{{ g.score }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="3">Chưa có điểm</td></tr>
-    {% endfor %}
-</table>
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        border-color: #3b82f6;
+    }
 
-<hr>
+    /* Icon trang trí */
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: #eff6ff;
+        color: #3b82f6;
+    }
 
-<h4>📝 Điểm danh</h4>
-<table class="table">
-    <tr>
-        <th>Lớp</th>
-        <th>Ngày</th>
-        <th>Trạng thái</th>
-    </tr>
-    {% for a in attendance %}
-    <tr>
-        <td>{{ a.class_obj.name }}</td>
-        <td>{{ a.date }}</td>
-        <td>{{ a.get_status_display }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="3">Chưa có dữ liệu</td></tr>
-    {% endfor %}
-</table>
+    .stat-info h5 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .stat-info .value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        line-height: 1;
+    }
+
+    /* Danh sách lớp học (Nâng cấp thêm) */
+    .class-list-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 2rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+
+    .class-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="welcome-section">
+        <h2 class="welcome-text">🎓 Dashboard Sinh viên</h2>
+        <p class="text-muted">Chào mừng <strong>{{ user.full_name|default:user.username }}</strong> quay trở lại!</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Lớp học tham gia</h5>
+                    <div class="value">{{ total_classes|default:"0" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f0fdf4; color: #10b981;">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Thông báo mới</h5>
+                    <div class="value">3</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Tỉ lệ chuyên cần</h5>
+                    <div class="value">95%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="class-list-card">
+        <div class="class-list-header">
+            <h4 class="fw-bold mb-0">🏫 Lớp học của tôi</h4>
+            <a href="#" class="btn btn-sm btn-outline-primary rounded-3 px-3">Xem tất cả</a>
+        </div>
+        
+        <div class="text-muted py-4 text-center border-top">
+             <i class="fas fa-info-circle me-1"></i> Chức năng hiển thị danh sách lớp đang được cập nhật.
+        </div>
+    </div>
+</div>
 {% endblock %}

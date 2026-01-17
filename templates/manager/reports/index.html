@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block title %} Phân tích & Báo cáo {% endblock %}
+
+{% block content %}
+<style>
+    /* Tiêu đề trang */
+    .page-heading {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Tùy chỉnh Card Báo cáo */
+    .report-card {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 20px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .report-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        border-color: #e2e8f0;
+    }
+
+    /* Icon trang trí cho Card */
+    .report-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .icon-blue { background: #eff6ff; color: #3b82f6; }
+    .icon-green { background: #f0fdf4; color: #10b981; }
+    .icon-amber { background: #fffbeb; color: #f59e0b; }
+    .icon-purple { background: #f5f3ff; color: #8b5cf6; }
+    .icon-slate { background: #f8fafc; color: #64748b; }
+
+    .report-card h5 {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .report-card p {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Buttons */
+    .btn-report {
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+        border: none;
+    }
+
+    .btn-blue { background: #3b82f6; color: white; }
+    .btn-green { background: #10b981; color: white; }
+    .btn-amber { background: #f59e0b; color: white; }
+    .btn-purple { background: #8b5cf6; color: white; }
+    
+    .btn-report:hover {
+        opacity: 0.9;
+        color: white;
+    }
+
+    .btn-outline-custom {
+        border: 1.5px solid #e2e8f0;
+        color: #475569;
+        background: white;
+    }
+
+    .btn-outline-custom:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #1e293b;
+    }
+
+    /* Group Export Buttons */
+    .export-group {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+</style>
+
+<div class="container-fluid">
+    <h2 class="page-heading">📊 Phân tích & Báo cáo hệ thống</h2>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="report-card">
+                <div>
+                    <div class="report-icon icon-blue">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h5>Báo cáo lớp học</h5>
+                    <p>Thống kê chi tiết số lượng học viên và tình trạng vận hành theo từng lớp.</p>
+                </div>
+                <a href="{% url 'class_analysis' %}" class="btn-report btn-blue w-100 justify-content-center">
+                    Xem báo cáo <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="report-card">
+                <div>
+                    <div class="report-icon icon-green">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h5>Báo cáo giảng viên</h5>
+                    <p>Theo dõi hiệu suất giảng dạy thông qua số lớp và học viên phụ trách.</p>
+                </div>
+                <a href="{% url 'lecturer_analysis' %}" class="btn-report btn-green w-100 justify-content-center">
+                    Xem báo cáo <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="report-card">
+                <div>
+                    <div class="report-icon icon-amber">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>Xu hướng tăng trưởng</h5>
+                    <p>Phân tích biến động số lượng học viên đăng ký theo từng tháng trong năm.</p>
+                </div>
+                <a href="{% url 'enrollment_trend' %}" class="btn-report btn-amber w-100 justify-content-center">
+                    Xem báo cáo <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="report-card">
+                <div>
+                    <div class="report-icon icon-purple">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>Trực quan hóa dữ liệu</h5>
+                    <p>Chuyển đổi các con số khô khan thành biểu đồ cột và hình tròn dễ hiểu.</p>
+                </div>
+                <a href="{% url 'class_chart' %}" class="btn-report btn-purple">
+                    <i class="fas fa-eye"></i> Xem biểu đồ
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="report-card">
+                <div>
+                    <div class="report-icon icon-slate">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h5>Kết xuất dữ liệu</h5>
+                    <p>Tải về các tệp báo cáo định dạng chuyên nghiệp phục vụ việc lưu trữ hoặc in ấn.</p>
+                </div>
+                <div class="export-group">
+                    <a href="{% url 'export_class_report' %}" class="btn-report btn-outline-custom">
+                        <i class="fas fa-file-csv text-danger"></i> CSV
+                    </a>
+                    <a href="{% url 'export_class_excel' %}" class="btn-report btn-outline-custom">
+                        <i class="fas fa-file-excel text-success"></i> Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

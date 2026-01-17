@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% block title %} Quản lý thông báo {% endblock %}
+
+{% block content %}
+<style>
+    /* Container chính */
+    .table-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Header & Search Group */
+    .header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        gap: 20px;
+    }
+
+    .header-group h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .search-box {
+        position: relative;
+        flex-grow: 1;
+        max-width: 450px;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 15px 12px 45px;
+        border-radius: 14px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Table Styling */
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        table-layout: fixed;
+    }
+
+    /* Tỉ lệ cột */
+    .col-title { width: 45%; }
+    .col-target { width: 20%; }
+    .col-status { width: 15%; }
+    .col-action { width: 20%; }
+
+    .table-custom thead th {
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .table-custom tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .table-custom td {
+        padding: 1.2rem 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .table-custom td:first-child { border-left: 1px solid #f1f5f9; border-radius: 16px 0 0 16px; }
+    .table-custom td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 16px 16px 0; }
+
+    /* Badge & Labels */
+    .target-label {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 50px;
+    }
+    .pill-active { background: #dcfce7; color: #15803d; }
+    .pill-inactive { background: #fee2e2; color: #b91c1c; }
+
+    /* Buttons */
+    .btn-create {
+        background: #3b82f6;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-create:hover { background: #2563eb; color: white; transform: translateY(-2px); }
+
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: 0.2s;
+        border: none;
+        margin: 0 2px;
+    }
+    .btn-edit { background: #fff7ed; color: #c2410c; }
+    .btn-toggle { background: #f8fafc; color: #64748b; border: 1.5px solid #e2e8f0; }
+    .btn-edit:hover { background: #ffedd5; }
+</style>
+
+<div class="container-fluid">
+    <div class="table-container">
+        <div class="header-group">
+            <h2><i class="fas fa-bullhorn text-primary"></i> Quản lý thông báo</h2>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="notifSearch" placeholder="Tìm kiếm tiêu đề hoặc đối tượng...">
+            </div>
+
+            <a href="{% url 'notification_create' %}" class="btn-create">
+                <i class="fas fa-plus me-2"></i> Tạo thông báo
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            {% if notifications %}
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th class="col-title">Tiêu đề</th>
+                        <th class="col-target">Đối tượng nhận</th>
+                        <th class="col-status">Trạng thái</th>
+                        <th class="col-action text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="notifTableBody">
+                    {% for n in notifications %}
+                    <tr class="notif-row">
+                        <td>
+                            <div class="fw-bold text-dark text-truncate" style="max-width: 400px;" title="{{ n.title }}">
+                                {{ n.title }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="target-label">
+                                <i class="fas fa-users"></i> {{ n.get_target_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if n.is_active %}
+                                <span class="status-pill pill-active">
+                                    <i class="fas fa-check-circle"></i> Đang bật
+                                </span>
+                            {% else %}
+                                <span class="status-pill pill-inactive">
+                                    <i class="fas fa-times-circle"></i> Đã tắt
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'notification_edit' n.id %}" class="action-btn btn-edit" title="Chỉnh sửa">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <a href="{% url 'notification_toggle' n.id %}" 
+                               class="action-btn btn-toggle" 
+                               title="{% if n.is_active %}Tắt{% else %}Bật{% endif %}">
+                                <i class="fas {% if n.is_active %}fa-toggle-on text-success{% else %}fa-toggle-off{% endif %}" style="font-size: 1.2rem;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="py-5 text-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/3553/3553155.png" width="80" class="mb-3 opacity-25">
+                <h6 class="text-muted">Chưa có thông báo nào được tạo.</h6>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tìm kiếm nhanh bằng JavaScript
+    document.getElementById('notifSearch').addEventListener('keyup', function() {
+        let searchValue = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.notif-row');
+        
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(searchValue) ? "" : "none";
+        });
+    });
+</script>
+{% endblock %}

@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from common.decorators import role_required
 from .models import Attendance, Grade
 from apps.classes.models import Enrollment
 from datetime import date
 
+# Giang vien diem danh
 @login_required
 @role_required('lecturer')
 def take_attendance(request, class_id):
@@ -25,6 +26,7 @@ def take_attendance(request, class_id):
         'enrollments': enrollments
     })
 
+# Giang vien nhap diem
 @login_required
 @role_required('lecturer')
 def enter_grade(request, class_id):
@@ -44,3 +46,40 @@ def enter_grade(request, class_id):
     return render(request, 'academics/grade.html', {
         'enrollments': enrollments
     })
+       
+# Dashboard Sinh vien
+@login_required
+@role_required('student')
+def student_dashboard(request):
+    enrollments = Enrollment.objects.filter(student=request.user)
+    
+    context = {
+        'enrollments': enrollments
+    }
+    
+    return render(request, 'student/dashboard.html', context)
+
+# Sinh vien xem lop hoc cua chinh minh
+@login_required
+@role_required('student')
+def my_classes(request):
+    enrollments = Enrollment.objects.filter(student=request.user).select_related('class_obj')
+    
+    context = {
+        'enrollments': enrollments
+    }
+    
+    return render(request, 'student/class_list.html', context)
+    
+# Sinh vien xem chi tiet lop hoc
+@login_required
+@role_required('student')
+def class_detail(request, class_id):
+    enrollment = get_object_or_404(Enrollment, student=request.user, class_obj_id=class_id)
+    
+    context = {
+        'enrollment': enrollment
+    }
+    
+    return render(request, 'student/class_detail.html', context)
+    

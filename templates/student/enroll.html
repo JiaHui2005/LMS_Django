@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>📝 Đăng ký lớp học</h2>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Lớp</th>
+                <th>Giảng viên</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in classes %}
+            <tr>
+                <td>{{ c.name }}</td>
+                <td>
+                    {% for l in c.lecturers.all %}
+                        {{ l.full_name }}<br>
+                    {% empty %}
+                        Chưa phân công
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'student_enroll_class' c.id %}"
+                       class="btn btn-success btn-sm">
+                        Đăng ký
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">
+                    Không có lớp nào để đăng ký
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

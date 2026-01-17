@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block title %} Báo cáo chi tiết giảng viên {% endblock %}
+
+{% block content %}
+<style>
+    /* Container chính */
+    .analysis-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Thẻ thống kê nhanh */
+    .stat-box {
+        padding: 1.5rem;
+        border-radius: 18px;
+        border: 1px solid #f1f5f9;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-box:hover { 
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.05);
+    }
+    
+    .stat-box h6 { 
+        font-size: 0.75rem; 
+        font-weight: 800; 
+        text-transform: uppercase; 
+        letter-spacing: 0.8px; 
+        color: #64748b; 
+        margin-bottom: 12px; 
+    }
+    
+    .stat-box .value { 
+        font-size: 1.75rem; 
+        font-weight: 800; 
+        color: #1e293b; 
+        line-height: 1;
+    }
+    
+    .stat-box .sub-value { 
+        font-size: 0.85rem; 
+        font-weight: 600;
+        color: #94a3b8; 
+        margin-top: 8px; 
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Màu sắc đặc trưng cho từng card */
+    .border-indigo { border-top: 5px solid #6366f1; }
+    .border-rose { border-top: 5px solid #f43f5e; }
+    .border-cyan { border-top: 5px solid #06b6d4; }
+
+    /* Header & Search */
+    .header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+        gap: 20px;
+    }
+
+    .search-wrapper {
+        position: relative;
+        flex-grow: 1;
+        max-width: 450px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 15px 12px 45px;
+        border-radius: 14px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #6366f1;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    /* Table Styling */
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .table-custom thead th {
+        background: transparent;
+        padding: 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background: #fff;
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .table-custom tbody tr:hover {
+        background: #f8fafc;
+        transform: scale(1.005);
+    }
+
+    .table-custom td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .table-custom td:first-child { 
+        border-left: 1px solid #f1f5f9; 
+        border-radius: 16px 0 0 16px; 
+        font-weight: 700; 
+        color: #1e293b;
+    }
+    
+    .table-custom td:last-child { 
+        border-right: 1px solid #f1f5f9; 
+        border-radius: 0 16px 16px 0; 
+    }
+
+    /* Badge phong cách hiện đại */
+    .badge-soft {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+    .badge-blue { background: #eff6ff; color: #2563eb; }
+    .badge-purple { background: #f5f3ff; color: #7c3aed; }
+</style>
+
+<div class="container-fluid">
+    <div class="analysis-container">
+        <h2 class="fw-extrabold mb-4" style="color: #1e293b; letter-spacing: -0.5px;">👨‍🏫 Phân tích Hiệu suất Giảng viên</h2>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-box border-indigo bg-white">
+                    <h6>Năng suất cao nhất</h6>
+                    <div class="value" style="color: #6366f1;">
+                        {% if max_lecturer %}{{ max_lecturer.student_count }}{% else %}0{% endif %}
+                    </div>
+                    <div class="sub-value">
+                        <i class="fas fa-user-check"></i> {{ max_lecturer.full_name|default:"Chưa có dữ liệu" }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-box border-rose bg-white">
+                    <h6>Số lượng ít nhất</h6>
+                    <div class="value" style="color: #f43f5e;">
+                        {% if min_lecturer %}{{ min_lecturer.student_count }}{% else %}0{% endif %}
+                    </div>
+                    <div class="sub-value">
+                        <i class="fas fa-user-minus"></i> {{ min_lecturer.full_name|default:"Chưa có dữ liệu" }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-box border-cyan bg-white">
+                    <h6>Tổng quy mô đào tạo</h6>
+                    <div class="value" style="color: #0891b2;">{{ total_students|default:"0" }}</div>
+                    <div class="sub-value">
+                        <i class="fas fa-users"></i> Tổng học viên toàn hệ thống
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="header-group">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="lecturerSearch" class="search-input" placeholder="Tìm tên giảng viên hoặc mã số...">
+            </div>
+            <div class="d-flex gap-2">
+                <button onclick="window.print()" class="btn btn-outline-secondary rounded-3 px-3">
+                    <i class="fas fa-print"></i>
+                </button>
+                <a href="javascript:history.back()" class="btn btn-dark rounded-3 fw-bold px-4">
+                    Quay lại
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Họ và tên Giảng viên</th>
+                        <th class="text-center">Số lớp phụ trách</th>
+                        <th class="text-center">Tổng số học viên</th>
+                    </tr>
+                </thead>
+                <tbody id="lecturerTableBody">
+                    {% for l in lecturers %}
+                    <tr class="lecturer-row">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name={{ l.full_name }}&background=random&color=fff" width="35" class="rounded-circle">
+                                {{ l.full_name }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge-soft badge-purple">{{ l.class_count }} lớp</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge-soft badge-blue">{{ l.student_count }} học viên</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            Chưa có dữ liệu giảng viên.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tính năng tìm kiếm giảng viên
+    document.getElementById('lecturerSearch').addEventListener('keyup', function() {
+        let searchValue = this.value.toLowerCase().trim();
+        let rows = document.querySelectorAll('.lecturer-row');
+        
+        rows.forEach(row => {
+            let fullName = row.querySelector('td:first-child').innerText.toLowerCase();
+            row.style.display = fullName.includes(searchValue) ? "" : "none";
+        });
+    });
+</script>
+{% endblock %}

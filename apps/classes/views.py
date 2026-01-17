@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from common.decorators import role_required
-from .models import Class
+from .models import Class, Enrollment
 from .forms import ClassForm
 
 # Lay lop hoc ma giang vien dang day
@@ -92,3 +92,45 @@ def class_deactivate(request, class_id):
     )
     
     return redirect('class_list')
+
+# Xem danh sach lop hoc co the dang ky
+@login_required
+@role_required('student')
+def enroll_list(request):
+    enrolled = Enrollment.objects.filter(
+        student=request.user
+    ).values_list('class_obj_id', flat=True)
+    
+    classes = Class.objects.filter(
+        is_active=True
+    ).exclude(id__in=enrolled)
+    
+    context = {
+        'classes': classes
+    }
+
+    return render(request, 'student/enroll.html', context)
+
+@login_required
+@role_required('student')
+def enroll_class(request, class_id):
+    classroom = get_object_or_404(Class, id=class_id, is_active=True)
+    
+    enrollment, created = Enrollment.objects.get_or_create(
+        student=request.user,
+        class_obj=classroom
+    )
+    
+    if not created:
+        messages.warning(
+            request,
+            'Bạn đã đăng ký lớp này rồi.'
+        )
+        
+    else:
+        messages.success(
+            request,
+            'Đăng ký lớp học thành công.'
+        )
+        
+        return redirect('student_my_classes')

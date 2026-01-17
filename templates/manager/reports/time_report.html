@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %} Báo cáo xu hướng thời gian {% endblock %}
+
+{% block content %}
+<style>
+    /* Container chính */
+    .trend-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Header Group */
+    .header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .header-group h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Table Styling */
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+    .table-custom thead th {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0 1rem;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .table-custom td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .table-custom td:first-child { 
+        border-left: 1px solid #f1f5f9; 
+        border-radius: 16px 0 0 16px; 
+        font-weight: 700;
+        color: #1e293b;
+        width: 20%;
+    }
+    
+    .table-custom td:last-child { 
+        border-right: 1px solid #f1f5f9; 
+        border-radius: 0 16px 16px 0; 
+    }
+
+    /* Thanh tiến trình mini (Progress Bar) */
+    .trend-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .progress-bar-bg {
+        flex-grow: 1;
+        height: 10px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 10px;
+        transition: width 1s ease-in-out;
+    }
+
+    .count-text {
+        font-weight: 800;
+        color: #3b82f6;
+        min-width: 100px;
+        text-align: right;
+    }
+
+    /* Hiệu ứng hover */
+    .table-custom tbody tr:hover {
+        transform: scale(1.01);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="trend-container">
+        <div class="header-group">
+            <h2><i class="fas fa-calendar-alt text-primary"></i> Xu hướng học viên theo tháng</h2>
+            <div class="d-flex gap-2">
+                <a href="{% url 'class_chart' %}" class="btn btn-outline-primary rounded-3 fw-bold">
+                    <i class="fas fa-chart-line me-1"></i> Xem biểu đồ
+                </a>
+                <a href="javascript:history.back()" class="btn btn-light border rounded-3 fw-bold">
+                    Quay lại
+                </a>
+            </div>
+        </div>
+
+        
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Tháng / Năm</th>
+                        <th>Trực quan hóa lượng đăng ký</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td>
+                            <span class="text-primary"><i class="far fa-clock me-2"></i>{{ item.month|date:"m/Y" }}</span>
+                        </td>
+                        <td>
+                            <div class="trend-wrapper">
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" 
+                                        style="width: {% if max_val > 0 %}{% widthratio item.total_count max_val 100 %}{% else %}0{% endif %}%"                                    </div>
+                                </div>
+                                <div class="count-text">
+                                    {{ item.total_count }} học viên
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center py-5 text-muted">
+                            Chưa ghi nhận dữ liệu đăng ký theo thời gian.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Hiệu ứng chạy thanh progress khi load trang
+    document.addEventListener("DOMContentLoaded", function() {
+        const bars = document.querySelectorAll('.progress-bar-fill');
+        bars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}

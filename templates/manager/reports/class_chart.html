@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %} Biểu đồ thống kê lớp học {% endblock %}
+
+{% block content %}
+<style>
+    /* Container bọc biểu đồ */
+    .chart-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-top: 1.5rem;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .chart-header h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Tùy chỉnh vùng vẽ biểu đồ */
+    .canvas-wrapper {
+        position: relative;
+        height: 450px; /* Tăng chiều cao để biểu đồ thoáng hơn */
+        width: 100%;
+    }
+
+    /* Nút quay lại */
+    .btn-back {
+        background: #f8fafc;
+        color: #64748b;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+        border: 1.5px solid #e2e8f0;
+    }
+
+    .btn-back:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="chart-container">
+        <div class="chart-header">
+            <h2><i class="fas fa-chart-bar text-primary"></i> Biểu đồ số học viên theo lớp</h2>
+            <a href="{% url 'reports_index' %}" class="btn-back">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="classChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Cấu hình Font chữ và màu sắc chung
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    const ctx = document.getElementById('classChart').getContext('2d');
+
+    // Tạo hiệu ứng Gradient cho cột biểu đồ
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)'); // Màu xanh đậm ở trên
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)'); // Nhạt dần xuống dưới
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [{
+                label: 'Số lượng học viên',
+                data: {{ data|safe }},
+                backgroundColor: gradient,
+                borderColor: '#3b82f6',
+                borderWidth: 2,
+                borderRadius: 8, // Bo góc các cột biểu đồ
+                borderSkipped: false,
+                hoverBackgroundColor: '#2563eb', // Đổi màu khi di chuột vào
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false // Ẩn legend vì đã có tiêu đề
+                },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f1f5f9',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        stepSize: 5,
+                        padding: 10
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false // Ẩn đường lưới dọc cho sạch
+                    },
+                    ticks: {
+                        padding: 10,
+                        font: { weight: '600' }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

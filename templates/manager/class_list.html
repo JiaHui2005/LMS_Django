@@ -158,6 +158,12 @@
     }
     .link-edit { color: #f59e0b; background: #fffbeb; }
     .link-deactivate { color: #ef4444; background: #fef2f2; }
+
+    .link-schedule {
+    color: #0ea5e9;
+    background: #ecfeff;
+    }
+
 </style>
 
 <div class="container-fluid">
@@ -210,16 +216,28 @@
                             {% endif %}
                         </td>
                         <td class="text-center">
-                            <a href="{% url 'class_edit' c.id %}" class="action-link link-edit">
+                            <a href="{% url 'class_edit' c.id %}" 
+                               class="action-link link-edit"
+                               title="Chỉnh sửa lớp">
                                 <i class="fas fa-edit"></i>
                             </a>
+                        
+                            <a href="{% url 'class_schedule_list' c.id %}" 
+                               class="action-link link-schedule ms-1"
+                               title="Quản lý lịch học">
+                                <i class="fas fa-calendar-alt"></i>
+                            </a>
+                        
                             {% if c.is_active %}
-                            <a href="{% url 'class_deactivate' c.id %}" class="action-link link-deactivate ms-1" 
-                               onclick="return confirm('Xác nhận kết thúc lớp học này?')">
+                            <a href="{% url 'class_deactivate' c.id %}" 
+                               class="action-link link-deactivate ms-1"
+                               onclick="return confirm('Xác nhận kết thúc lớp học này?')"
+                               title="Kết thúc lớp">
                                 <i class="fas fa-stop-circle"></i>
                             </a>
                             {% endif %}
                         </td>
+
                     </tr>
                     {% empty %}
                     <tr>

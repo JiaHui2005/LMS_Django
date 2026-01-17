@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %} Báo cáo chi tiết lớp học {% endblock %}
+
+{% block content %}
+<style>
+    /* Container chính */
+    .analysis-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Thẻ thống kê nhanh */
+    .stat-box {
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    .stat-box:hover { transform: translateY(-5px); }
+    .stat-box h6 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 10px; }
+    .stat-box .value { font-size: 1.5rem; font-weight: 800; color: #1e293b; }
+    .stat-box .sub-value { font-size: 0.85rem; color: #94a3b8; margin-top: 5px; }
+
+    .border-blue { border-left: 5px solid #3b82f6; }
+    .border-green { border-left: 5px solid #10b981; }
+    .border-amber { border-left: 5px solid #f59e0b; }
+
+    /* Search & Header */
+    .header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        gap: 20px;
+    }
+
+    .search-wrapper {
+        position: relative;
+        flex-grow: 1;
+        max-width: 400px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Table Styling */
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+    .table-custom thead th {
+        background: #f8fafc;
+        padding: 1rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        background: #fff;
+        transition: all 0.2s;
+    }
+
+    .table-custom tbody tr:hover {
+        background: #f1f5f9;
+        transform: scale(1.005);
+    }
+
+    .table-custom td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .table-custom td:first-child { border-left: 1px solid #f1f5f9; border-radius: 12px 0 0 12px; font-weight: 600; }
+    .table-custom td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 12px 12px 0; }
+
+    .count-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="analysis-container">
+        <h2 class="fw-extrabold mb-4" style="color: #1e293b;">🏫 Báo cáo lớp học chi tiết</h2>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-box border-blue bg-white shadow-sm">
+                    <h6>Trung bình học viên</h6>
+                    <div class="value">{{ avg_students|default:"0" }}</div>
+                    <div class="sub-value">Học viên / lớp</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box border-green bg-white shadow-sm">
+                    <h6>Lớp đông nhất</h6>
+                    <div class="value text-success">
+                        {% if max_class %}{{ max_class.student_count }}{% else %}0{% endif %}
+                    </div>
+                    <div class="sub-value text-truncate">Lớp: {{ max_class.name|default:"--" }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box border-amber bg-white shadow-sm">
+                    <h6>Lớp ít nhất</h6>
+                    <div class="value text-warning">
+                        {% if min_class %}{{ min_class.student_count }}{% else %}0{% endif %}
+                    </div>
+                    <div class="sub-value text-truncate">Lớp: {{ min_class.name|default:"--" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-group">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="analysisSearch" class="search-input" placeholder="Tìm tên lớp học...">
+            </div>
+            <a href="javascript:history.back()" class="btn btn-light border rounded-3 fw-bold px-4">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom" id="analysisTable">
+                <thead>
+                    <tr>
+                        <th>Tên lớp học</th>
+                        <th class="text-center">Số lượng học viên</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in classes %}
+                    <tr class="analysis-row">
+                        <td>{{ c.name }}</td>
+                        <td class="text-center">
+                            <span class="count-badge">{{ c.student_count }} học viên</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center py-5 text-muted">
+                            Không có dữ liệu báo cáo.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tính năng tìm kiếm nhanh
+    document.getElementById('analysisSearch').addEventListener('keyup', function() {
+        let searchValue = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.analysis-row');
+        
+        rows.forEach(row => {
+            let className = row.querySelector('td:first-child').innerText.toLowerCase();
+            row.style.display = className.includes(searchValue) ? "" : "none";
+        });
+    });
+</script>
+{% endblock %}

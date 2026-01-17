@@ -1,13 +1,13 @@
 <style>
     :root {
         --sidebar-width: 260px;
-        --sidebar-bg: #1e293b; /* Màu xanh đen hiện đại */
-        --sidebar-hover: #334155;
-        --accent-color: #3b82f6; /* Màu xanh brand */
+        --sidebar-bg: #0f172a; /* Đậm hơn một chút để tạo chiều sâu */
+        --sidebar-hover: rgba(255, 255, 255, 0.08);
+        --accent-color: #3b82f6;
         --text-gray: #94a3b8;
+        --active-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     }
 
-    /* Sidebar Container */
     .sidebar {
         width: var(--sidebar-width);
         height: 100vh;
@@ -18,98 +18,85 @@
         display: flex;
         flex-direction: column;
         color: white;
-        transition: all 0.3s ease;
         z-index: 1000;
-        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        border-right: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* Logo Area */
     .sidebar-logo {
-        padding: 2rem 1.5rem;
-        font-size: 1.5rem;
+        padding: 2.5rem 1.5rem; /* Tăng padding để thoáng hơn */
+        font-size: 1.4rem;
         font-weight: 800;
         display: flex;
         align-items: center;
         gap: 12px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     .sidebar-logo span {
         letter-spacing: 1px;
-        background: linear-gradient(90deg, #fff, var(--text-gray));
+        background: linear-gradient(to right, #fff, #60a5fa);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    /* Menu List */
     .sidebar-menu {
         list-style: none;
-        padding: 1.5rem 0.75rem;
+        padding: 0.5rem 1rem;
         margin: 0;
         flex-grow: 1;
-        overflow-y: auto;
     }
 
-    .sidebar-menu li {
-        margin-bottom: 5px;
-    }
+    .sidebar-menu li { margin-bottom: 8px; }
 
     .sidebar-menu a {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 15px;
+        padding: 12px 16px;
         color: var(--text-gray);
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 12px;
         font-weight: 500;
-        transition: all 0.2s ease;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Hiệu ứng Hover */
     .sidebar-menu a:hover {
         background: var(--sidebar-hover);
-        color: white;
+        color: #fff;
+        transform: translateX(5px); /* Nhích nhẹ sang phải khi hover */
     }
 
-    /* Active State */
+    /* Fix lỗi Active State */
     .sidebar-menu a.active {
-        background: var(--accent-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        background: var(--accent-color) !important;
+        color: white !important;
+        box-shadow: var(--active-shadow);
+        font-weight: 600;
     }
 
-    .sidebar-menu a span {
-        font-size: 0.95rem;
-    }
-
-    /* Footer / Logout */
     .sidebar-footer {
         padding: 1.5rem;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        margin-top: auto;
     }
 
     .logout {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 15px;
-        color: #fb7185; /* Màu đỏ nhạt cho đăng xuất */
+        padding: 12px 16px;
+        color: #fda4af;
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 12px;
         font-weight: 600;
-        transition: background 0.2s;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
     }
 
     .logout:hover {
-        background: rgba(251, 113, 133, 0.1);
-    }
-
-    /* Điều chỉnh phần nội dung chính (Main content) */
-    .main-wrapper {
-        margin-left: var(--sidebar-width);
-        padding: 2rem;
-        background: #f8fafc;
-        min-height: 100vh;
+        background: rgba(244, 63, 94, 0.1);
+        border-color: rgba(244, 63, 94, 0.2);
+        color: #fb7185;
     }
 </style>
 
@@ -119,48 +106,82 @@
     </div>
 
     <ul class="sidebar-menu">
+        {% with url_name=request.resolver_match.url_name %}
+        
         {% if user.role == 'manager' %}
             <li>
-                <a href="{% url 'manager_dashboard' %}" class="{% if 'manager' in request.path %}active{% endif %}">
+                <a href="{% url 'manager_dashboard' %}" 
+                   class="{% if url_name == 'manager_dashboard' %}active{% endif %}">
                     📊 <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'user_list' %}" class="{% if 'user' in request.path %}active{% endif %}">
-                    👥 <span>Người dùng</span>
+                <a href="{% url 'user_list' %}" 
+                   class="{% if 'user' in url_name %}active{% endif %}">
+                    👥 <span>Quản lý Người dùng</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'class_list' %}"
-                   class="{% if 'classes' in request.path %}active{% endif %}">
-                    🏫 <span>Lớp học</span>
+                   class="{% if 'class' in url_name %}active{% endif %}">
+                    🏫 <span>Quản lý Lớp học</span>
                 </a>
             </li>
-        {% endif %}
-
-        {% if user.role == 'lecturer' %}
             <li>
-                <a href="{% url 'lecturer_dashboard' %}" class="{% if 'lecturer' in request.path %}active{% endif %}">
-                    👨‍🏫 <span>Giảng viên</span>
+                <a href="{% url 'notification_list' %}"
+                   class="{% if 'notification' in url_name %}active{% endif %}">
+                    📢 <span>Quản lý Thông báo</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'reports_index' %}"
+                   class="{% if 'reports' in url_name or 'analysis' in url_name %}active{% endif %}">
+                    📈 <span>Báo cáo & Phân tích</span>
                 </a>
             </li>
         {% endif %}
 
         {% if user.role == 'student' %}
             <li>
-                <a href="{% url 'student_dashboard' %}" class="{% if 'student' in request.path %}active{% endif %}">
-                    🎓 <span>Sinh viên</span>
+                <a href="{% url 'student_dashboard' %}"
+                   class="{% if url_name == 'student_dashboard' %}active{% endif %}">
+                    🎓 <span>Dashboard</span>
+                </a>
+            </li>
+        
+            <li>
+                <a href="{% url 'student_my_classes' %}"
+                   class="{% if 'student_my_classes' == url_name or 'student_class_detail' == url_name %}active{% endif %}">
+                    📚 <span>Lớp học của tôi</span>
+                </a>
+            </li>
+        
+            <li>
+                <a href="{% url 'student_schedule' %}"
+                   class="{% if 'student_schedule' == url_name %}active{% endif %}">
+                    🗓️ <span>Thời khóa biểu</span>
+                </a>
+            </li>
+        
+            <li>
+                <a href="{% url 'student_enroll' %}"
+                   class="{% if 'student_enroll' in url_name %}active{% endif %}">
+                    📝 <span>Đăng ký lớp học</span>
                 </a>
             </li>
         {% endif %}
 
-        {% if user.role == 'coordinator' %}
+
+        {% comment %} Tương tự cho các role khác {% endcomment %}
+        {% if user.role == 'lecturer' %}
             <li>
-                <a href="{% url 'coordinator_dashboard' %}" class="{% if 'coordinator' in request.path %}active{% endif %}">
-                    🧭 <span>Điều phối</span>
+                <a href="{% url 'lecturer_dashboard' %}" class="{% if url_name == 'lecturer_dashboard' %}active{% endif %}">
+                    👨‍🏫 <span>Giảng viên</span>
                 </a>
             </li>
         {% endif %}
+
+        {% endwith %}
     </ul>
 
     <div class="sidebar-footer">

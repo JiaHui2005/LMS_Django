@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}
+    {% if schedule %}Chỉnh sửa buổi học{% else %}Thêm buổi học{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Card bọc ngoài form */
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        border: 1px solid #edf2f7;
+    }
+
+    .form-header {
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1a202c;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Tùy chỉnh Input */
+    .form-control, .form-select {
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 0.75rem 1rem !important;
+        background-color: #f8fafc !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Phần tạo nhanh (Bulk Create) */
+    .bulk-section {
+        background: #fffbeb;
+        border: 1px dashed #f59e0b;
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+    }
+
+    /* Nút bấm */
+    .btn-save {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+
+    .btn-save:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>
+                <i class="fas {% if schedule %}fa-edit{% else %}fa-plus-circle{% endif %} text-primary"></i>
+                {% if schedule %}Chỉnh sửa buổi học{% else %}Thêm buổi học{% endif %}
+            </h2>
+            <p class="text-muted mb-0 mt-2">Lớp học: <strong>{{ classroom.name }}</strong></p>
+        </div>
+
+        {% if not schedule %}
+        <div class="bulk-section mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="fw-bold text-warning mb-1"><i class="fas fa-magic me-2"></i>Tạo nhanh n buổi học?</h6>
+                    <small class="text-muted">Nhập số buổi bạn muốn tạo thêm với cùng khung giờ này.</small>
+                </div>
+                <div style="width: 120px;">
+                    <input type="number" id="bulk_count" name="bulk_count" class="form-control text-center" value="1" min="1" max="20">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong class="fs-5">Không thể lưu lịch học:</strong>
+                </div>
+                <ul class="mb-0 ms-4">
+                    {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate id="scheduleForm">
+            {% csrf_token %}
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold"><i class="far fa-calendar-alt me-1 text-muted"></i> Thứ trong tuần</label>
+                    {{ form.day_of_week }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold"><i class="far fa-clock me-1 text-muted"></i> Giờ bắt đầu</label>
+                    {{ form.start_time }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold"><i class="far fa-clock me-1 text-muted"></i> Giờ kết thúc</label>
+                    {{ form.end_time }}
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label fw-bold"><i class="fas fa-door-open me-1 text-muted"></i> Phòng học</label>
+                    {{ form.room }}
+                </div>
+            </div>
+
+            <div class="btn-action-group mt-5 pt-4 border-top d-flex gap-3">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save me-2"></i> Lưu lịch học
+                </button>
+                <a href="{% url 'class_schedule_list' classroom.id %}" class="btn btn-light px-4 py-2 rounded-3 border fw-bold text-muted">
+                    Hủy bỏ
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Áp dụng class Bootstrap cho các thẻ Django render
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(el => {
+            if (el.tagName === 'SELECT') el.classList.add('form-select');
+            else if (el.type !== 'checkbox') el.classList.add('form-control');
+        });
+
+        // Xử lý logic tạo nhanh n buổi (Chỉ là gửi giá trị bulk_count lên Backend)
+        // Lưu ý: Bạn cần xử lý logic này trong views.py của Django để thực hiện vòng lặp lưu dữ liệu
+    });
+</script>
+{% endblock %}

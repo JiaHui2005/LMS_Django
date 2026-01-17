@@ -48,6 +48,7 @@ INSTALLED_APPS += [
     'apps.schedules',
     'apps.support',
     'apps.reports',
+    'apps.notifications',
     'common',
 ]
 

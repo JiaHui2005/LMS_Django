@@ -1,136 +1,156 @@
 {% extends 'base.html' %}
-{% block title %}Danh sách người dùng{% endblock %}
+{% block title %}Quản lý người dùng{% endblock %}
 
 {% block content %}
 <style>
-    /* Tổng thể container */
+    /* Container chính */
     .table-container {
         background: #ffffff;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        {% comment %} margin-top: 2rem; {% endcomment %}
-        border: 1px solid #f0f0f0;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
     }
 
-    /* Tiêu đề và Nút thêm mới */
+    /* Header & Search Section */
     .header-section {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
+        gap: 20px;
     }
 
     .header-section h2 {
-        color: #1a202c;
+        color: #1e293b;
         font-weight: 800;
         margin: 0;
+        white-space: nowrap;
+    }
+
+    /* Thanh tìm kiếm hiện đại */
+    .search-wrapper {
+        position: relative;
+        flex-grow: 1;
+        max-width: 450px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 15px 12px 45px;
+        border-radius: 14px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
     }
 
     /* Tùy chỉnh bảng */
-    .table {
-        vertical-align: middle;
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
     }
 
-    .table thead {
+    .table-custom thead th {
         background-color: #f8fafc;
-    }
-
-    .table thead th {
         border: none;
         color: #64748b;
         text-transform: uppercase;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        font-weight: 700;
         letter-spacing: 0.05em;
         padding: 1rem;
     }
 
-    .table tbody tr {
+    .table-custom tbody tr {
+        background-color: #ffffff;
         transition: all 0.2s;
+    }
+
+    .table-custom tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .table-custom td {
+        padding: 1.2rem 1rem;
+        color: #334155;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
         border-bottom: 1px solid #f1f5f9;
     }
 
-    .table tbody tr:hover {
-        background-color: #f1f5f9;
-        transform: scale(1.002);
-    }
+    .table-custom td:first-child { border-left: 1px solid #f1f5f9; border-radius: 16px 0 0 16px; }
+    .table-custom td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 16px 16px 0; }
 
-    .table td {
-        padding: 1.2rem 1rem;
-        color: #334155;
-        font-size: 0.95rem;
-    }
-
-    /* Badge trạng thái */
-    .badge {
-        padding: 0.5rem 0.8rem;
+    /* Badge & Buttons */
+    .badge-soft {
+        padding: 6px 12px;
         border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.8rem;
+        font-weight: 700;
+        font-size: 0.75rem;
     }
+    .bg-success-soft { background-color: #dcfce7; color: #15803d; }
+    .bg-secondary-soft { background-color: #f1f5f9; color: #475569; }
 
-    .bg-success-light {
-        background-color: #dcfce7;
-        color: #166534;
-    }
-
-    .bg-secondary-light {
-        background-color: #f1f5f9;
-        color: #475569;
-    }
-
-    /* Nút hành động */
     .btn-action {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border-radius: 10px;
-        transition: all 0.2s;
-        margin: 0 2px;
+        transition: 0.2s;
         border: none;
+        margin: 0 2px;
     }
-
-    .btn-edit {
-        background-color: #fef9c3;
-        color: #854d0e;
-    }
-
-    .btn-edit:hover {
-        background-color: #fde047;
-        color: #854d0e;
-    }
-
-    .btn-delete {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-
-    .btn-delete:hover {
-        background-color: #fecaca;
-        color: #991b1b;
-    }
-
+    .btn-edit { background-color: #fffbeb; color: #92400e; }
+    .btn-delete { background-color: #fef2f2; color: #991b1b; }
+    
     .btn-create {
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+        background: #3b82f6;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        white-space: nowrap;
     }
 </style>
 
-<div class="container">
+<div class="container-fluid">
     <div class="table-container">
         <div class="header-section">
             <h2>👥 Quản lý người dùng</h2>
-            <a href="{% url 'user_create' %}" class="btn btn-primary btn-create">
+            
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearch" class="search-input" placeholder="Tìm theo tên, username hoặc email...">
+            </div>
+
+            <a href="{% url 'user_create' %}" class="btn btn-create">
                 <i class="fas fa-plus me-2"></i> Tạo tài khoản
             </a>
         </div>
 
         <div class="table-responsive">
-            <table class="table">
+            <table class="table-custom" id="userTable">
                 <thead>
                     <tr>
                         <th>Username</th>
@@ -143,10 +163,10 @@
                 </thead>
                 <tbody>
                     {% for u in users %}
-                    <tr>
+                    <tr class="user-row">
                         <td class="fw-bold">{{ u.username }}</td>
-                        <td>{{ u.full_name }}</td>
-                        <td>{{ u.email }}</td>
+                        <td class="user-name">{{ u.full_name }}</td>
+                        <td class="user-email">{{ u.email }}</td>
                         <td>
                             <span class="text-muted small">
                                 <i class="fas fa-user-tag me-1"></i> {{ u.get_role_display }}
@@ -154,14 +174,14 @@
                         </td>
                         <td>
                             {% if u.is_active %}
-                                <span class="badge bg-success-light">● Hoạt động</span>
+                                <span class="badge-soft bg-success-soft">● Hoạt động</span>
                             {% else %}
-                                <span class="badge bg-secondary-light">○ Khóa</span>
+                                <span class="badge-soft bg-secondary-soft">○ Khóa</span>
                             {% endif %}
                         </td>
                         <td class="text-center">
                             <a href="{% url 'user_edit' u.id %}" class="btn-action btn-edit" title="Sửa">
-                                <i class="fas fa-pen-nib"></i>
+                                <i class="fas fa-pen"></i>
                             </a>
                             <a href="{% url 'user_delete' u.id %}" class="btn-action btn-delete" title="Xóa">
                                 <i class="fas fa-trash"></i>
@@ -180,4 +200,22 @@
         </div>
     </div>
 </div>
-{% endblock %}
+
+<script>
+    // Xử lý tìm kiếm thời gian thực
+    document.getElementById('userSearch').addEventListener('keyup', function() {
+        const term = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.user-row');
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            // Lọc dữ liệu dựa trên toàn bộ văn bản trong hàng
+            if (text.includes(term)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>
+{% endblock %}  

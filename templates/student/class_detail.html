@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>🏫 {{ classroom.name }}</h2>
+
+    <p><strong>Mã lớp:</strong> {{ classroom.code }}</p>
+
+    <h5 class="mt-4">👨‍🏫 Giảng viên</h5>
+    <ul>
+        {% for l in classroom.lecturers.all %}
+            <li>{{ l.full_name }}</li>
+        {% empty %}
+            <li>Chưa phân công</li>
+        {% endfor %}
+    </ul>
+
+    <h5 class="mt-4">📌 Điểm danh</h5>
+    <p>(Sẽ cập nhật)</p>
+
+    <h5 class="mt-4">📊 Điểm</h5>
+    <p>(Sẽ cập nhật)</p>
+
+</div>
+{% endblock %}

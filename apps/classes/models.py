@@ -12,6 +12,15 @@ class Class(models.Model):
         related_name='teaching_classes',
         limit_choices_to={'role': 'lecturer'}
     )
+    
+    max_students = models.PositiveIntegerField(
+        verbose_name="Sĩ số tối đa"
+    )
+    
+    total_sessions = models.PositiveIntegerField(
+        verbose_name="Tổng số buổi học"
+    )
+    
     is_active = models.BooleanField(default=True)
     
     def __str__(self):

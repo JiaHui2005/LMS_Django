@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Tạo nhiều buổi học – {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        border: 1px solid #f1f5f9;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+        font-weight: 800;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section h5 {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 1rem;
+    }
+
+    .hint {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="form-container">
+
+        <!-- HEADER -->
+        <div class="form-header">
+            <h2>⚡ Tạo nhiều buổi học – {{ classroom.name }}</h2>
+
+            <a href="{% url 'class_schedule_list' classroom.id %}"
+               class="btn btn-outline-secondary">
+                ← Quay lại
+            </a>
+        </div>
+
+        <!-- FORM -->
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- SECTION 1 -->
+            <div class="form-section">
+                <h5>📅 Thông tin chung</h5>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Thứ trong tuần</label>
+                        {{ form.day_of_week }}
+                        {% if form.day_of_week.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.day_of_week.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Ngày bắt đầu</label>
+                        {{ form.start_date }}
+                        {% if form.start_date.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.start_date.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Số buổi học</label>
+                        {{ form.total_sessions }}
+                        {% if form.total_sessions.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.total_sessions.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <p class="hint mt-2">
+                    Ví dụ: chọn Thứ 7, ngày bắt đầu 20/01, số buổi = 10 → hệ thống tạo 10 buổi, mỗi tuần 1 buổi.
+                </p>
+            </div>
+
+            <!-- SECTION 2 -->
+            <div class="form-section">
+                <h5>⏰ Thời gian & Phòng học</h5>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Giờ bắt đầu</label>
+                        {{ form.start_time }}
+                        {% if form.start_time.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.start_time.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Giờ kết thúc</label>
+                        {{ form.end_time }}
+                        {% if form.end_time.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.end_time.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Phòng học</label>
+                        {{ form.room }}
+                        {% if form.room.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.room.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- NON FIELD ERRORS -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- ACTION -->
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    ⚡ Tạo buổi học
+                </button>
+                <a href="{% url 'class_schedule_list' classroom.id %}"
+                   class="btn btn-outline-secondary">
+                    Hủy
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}

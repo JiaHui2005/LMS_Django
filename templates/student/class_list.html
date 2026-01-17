@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>📚 Lớp học của tôi</h2>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Lớp</th>
+                <th>Giảng viên</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in enrollments %}
+            <tr>
+                <td>{{ e.class_obj.name }}</td>
+                <td>
+                    {% for l in e.class_obj.lecturers.all %}
+                        {{ l.full_name }}<br>
+                    {% empty %}
+                        Chưa phân công
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'student_class_detail' e.class_obj.id %}"
+                       class="btn btn-sm btn-primary">
+                        Chi tiết
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">
+                    Bạn chưa đăng ký lớp nào
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
