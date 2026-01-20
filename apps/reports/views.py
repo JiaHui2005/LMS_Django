@@ -1,7 +1,7 @@
 import csv
 import openpyxl
 from django.shortcuts import render
-from django.db.models import Count
+from django.db.models import Count, Avg
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
 from common.decorators import role_required
@@ -28,8 +28,17 @@ def class_analysis(request):
         .order_by('-student_count')
     )
     
+    avg_student = classes.aggregate(avg=Avg('student_count'))['avg'] or 0
+    
+    most_class = classes.first()
+    
+    least_class = classes.last()
+    
     context = {
-        'classes': classes
+        'classes': classes,
+        'avg_student': avg_student,
+        'most_class': most_class,
+        'least_class': least_class,
     }
     
     return render(request, 'manager/reports/class_report.html', context)
@@ -47,8 +56,16 @@ def lecturer_analysis(request):
         ).order_by('-student_count')
     )
     
+    top_lecturer = lecturers.first()
+    lowest_lecturer = lecturers.last()
+    
+    total_students = Enrollment.objects.count()
+    
     context = {
-        'lecturers': lecturers
+        'lecturers': lecturers,
+        'top_lecturer': top_lecturer,
+        'lowest_lecturer': lowest_lecturer,
+        'total_students': total_students,
     }
     
     return render(request, 'manager/reports/lecturer_report.html', context)
@@ -65,8 +82,11 @@ def enrollment_trend(request):
         .order_by('month')
     )
     
+    max_val = max([item['total_count'] for item in data], default=0)
+    
     context = {
-        'data': data
+        'data': data,
+        'max_val': max_val
     }
     
     return render(request, 'manager/reports/time_report.html', context)

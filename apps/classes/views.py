@@ -68,6 +68,8 @@ def class_edit(request, class_id):
                 "Cập nhật lớp học thành công."
             )
             return redirect('class_list')
+        else:
+            print(form.errors)
     else:
         form = ClassForm(instance=class_obj)
         

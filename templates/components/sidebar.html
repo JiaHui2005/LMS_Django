@@ -144,13 +144,21 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'class_list' %}" class="{% if 'class' in url_name %}active{% endif %}">
+                <a href="{% url 'class_list' %}"
+                   class="{% if url_name == 'class_list' or url_name == 'class_detail' %}active{% endif %}">
                     <i class="fas fa-school"></i> <span>Lớp học</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'notification_list' %}" class="{% if 'notification' in url_name %}active{% endif %}">
                     <i class="fas fa-bullhorn"></i> <span>Thông báo</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'reports_index' %}"
+                   class="{% if 'reports' in url_name %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Phân tích &amp; Báo cáo</span>
                 </a>
             </li>
         {% endif %}

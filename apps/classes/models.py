@@ -5,13 +5,30 @@ from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
 class Class(models.Model):
-    code = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=255)
+    code = models.CharField(
+        max_length=20,
+        unique=True
+    )
+    
+    name = models.CharField(
+        max_length=255,
+        help_text="Tên hiển thị của Lớp (VD: Python cơ bản - PY01)"
+    )
+    
     lecturers = models.ManyToManyField(
         User,
         related_name='teaching_classes',
         limit_choices_to={'role': 'lecturer'}
     )
+    
+    syllabus_version = models.ForeignKey(
+        'academics.SyllabusVersion',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='classes',
+        help_text="Phiên bản chương trình học đang áp dụng trong lớp này"
+    )    
     
     max_students = models.PositiveIntegerField(
         verbose_name="Sĩ số tối đa"
@@ -23,8 +40,10 @@ class Class(models.Model):
     
     is_active = models.BooleanField(default=True)
     
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
-        return self.name
+        return f"{self.code} - {self.name}"
     
 class Enrollment(models.Model):
     student = models.ForeignKey(

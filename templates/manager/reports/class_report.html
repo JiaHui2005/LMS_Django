@@ -132,18 +132,18 @@
                 <div class="stat-box border-green bg-white shadow-sm">
                     <h6>Lớp đông nhất</h6>
                     <div class="value text-success">
-                        {% if max_class %}{{ max_class.student_count }}{% else %}0{% endif %}
+                        {% if most_class %}{{ most_class.student_count }}{% else %}0{% endif %}
                     </div>
-                    <div class="sub-value text-truncate">Lớp: {{ max_class.name|default:"--" }}</div>
+                    <div class="sub-value text-truncate">Lớp: {{ most_class.name|default:"--" }}</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-box border-amber bg-white shadow-sm">
                     <h6>Lớp ít nhất</h6>
                     <div class="value text-warning">
-                        {% if min_class %}{{ min_class.student_count }}{% else %}0{% endif %}
+                        {% if least_class %}{{ least_class.student_count }}{% else %}0{% endif %}
                     </div>
-                    <div class="sub-value text-truncate">Lớp: {{ min_class.name|default:"--" }}</div>
+                    <div class="sub-value text-truncate">Lớp: {{ least_class.name|default:"--" }}</div>
                 </div>
             </div>
         </div>
