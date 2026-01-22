@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from common.decorators import role_required
-from .models import Attendance, Grade
-from apps.classes.models import Enrollment
+from .models import Attendance, Grade, SyllabusVersion
+from apps.classes.models import Enrollment, Class
 from datetime import date
 
 # Giang vien diem danh
@@ -75,4 +75,55 @@ def class_detail(request, class_id):
     }
     
     return render(request, 'student/class_detail.html', context)
+
+# Quan ly xem syllabus cua lop hoc    
+@login_required
+@role_required('manager')
+def manager_view_class_syllabus(request, class_id):
+    class_obj = get_object_or_404(Class, id=class_id)
+    
+    syllabus_version = class_obj.syllabus_version
+    
+    context = {
+        'class_obj': class_obj,
+        'syllabus_version': syllabus_version,
+        'weeks': syllabus_version.weeks.all() if syllabus_version else [],
+        'grading_items': syllabus_version.grading_item.all() if syllabus_version else []
+    }
+    
+    return render(request, 'manager/syllabus_detail.html', context)
+
+# Lec chinh sua syllabus cua lop hoc
+@login_required
+@role_required('lecturer')
+def lecturer_edit_class_syllabus(request, class_id):
+    class_obj = get_object_or_404(Class, id=class_obj, lecturer=request.user)
+    
+    syllabus_version = class_obj.syllabus_version
+    
+    if not syllabus_version:
+        
+        return render(request, 'lecturer/no_syllabus.html', {'class_obj': class_obj})
+    
+    weeks = syllabus_version.weeks.all()
+    
+    if request.method == 'POST':
+        for week in weeks:
+            week.title = request.POST.get(f"title_week{week.id}", week.title)
+            week.content = request.POST.get(f"content_week{week.id}", week.content)
+            week.reference_materials = request.POST.get(f"reference_materials_week{week.id}", week.reference_materials)
+            week.save()
+            
+        return redirect('lecturer_edit_class_syllabus', class_id=class_obj.id)
+    
+    context = {
+        'class_obj': class_obj,
+        'syllabus_version': syllabus_version,
+        'weeks': weeks
+    }
+    
+    return render(request, 'lecturer/syllabus_edit.html', context)
+    
+    
+    
     

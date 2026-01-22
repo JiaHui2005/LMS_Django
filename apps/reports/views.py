@@ -24,7 +24,7 @@ def reports_index(request):
 def class_analysis(request):
     classes = (
         Class.objects
-        .annotate(student_count=Count('enrollment'))
+        .annotate(student_count=Count('enrollments'))
         .order_by('-student_count')
     )
     
@@ -52,7 +52,7 @@ def lecturer_analysis(request):
         .filter(role='lecturer')
         .annotate(
             class_count = Count('teaching_classes', distinct=True),
-            student_count = Count('teaching_classes__enrollment', distinct=True)
+            student_count = Count('teaching_classes__enrollments', distinct=True)
         ).order_by('-student_count')
     )
     
@@ -110,7 +110,7 @@ def export_class_report(request):
 @login_required
 @role_required('manager')
 def class_chart(request):
-    classes = Class.objects.annotate(student_count=Count('enrollment'))
+    classes = Class.objects.annotate(student_count=Count('enrollments'))
     
     labels = [c.name for c in classes]
     data = [c.student_count for c in classes]

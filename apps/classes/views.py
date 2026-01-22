@@ -113,6 +113,7 @@ def enroll_list(request):
 
     return render(request, 'student/enroll.html', context)
 
+# Sinh vien tham gia lop
 @login_required
 @role_required('student')
 def enroll_class(request, class_id):
@@ -136,3 +137,19 @@ def enroll_class(request, class_id):
         )
         
         return redirect('student_my_classes')
+    
+# Chi tiet lop hoc cho Lec
+@login_required
+@role_required('lecturer')
+def lecturer_class_detail(request, class_id):
+    class_obj = get_object_or_404(Class, id=class_id, lecturers=request.user)
+    
+    students = (class_obj.enrollments.select_related('student').all())
+    
+    context = {
+        'class_obj': class_obj,
+        'students': students,
+        'syllabus_version': class_obj.syllabus_version
+    }
+    
+    return render(request, 'lecturer/class_detail.html', context)

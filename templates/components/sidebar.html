@@ -198,6 +198,25 @@
             </li>
         {% endif %}
 
+        {% if user.role == 'lecturer' %}
+        <li>
+            <a href="{% url 'lecturer_dashboard' %}"
+               class="{% if url_name == 'lecturer_dashboard' %}active{% endif %}">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'lecturer_classes' %}"
+               class="{% if 'lecturer_classes' in url_name %}active{% endif %}">
+                <i class="fas fa-school"></i>
+                <span>Các lớp đang dạy</span>
+            </a>
+        </li>
+
+        {% endif %}
+
         {% endwith %}
     </ul>
 

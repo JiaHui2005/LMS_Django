@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}Lớp của tôi{% endblock %}
+{% block title %}Lớp tôi đang giảng dạy{% endblock %}
 
 {% block content %}
-<h3>Lớp tôi đang giảng dạy</h3>
+<h3 class="mb-3">📚 Lớp tôi đang giảng dạy</h3>
 
 <table class="table table-bordered mt-3">
     <thead>
@@ -18,8 +18,16 @@
             <td>{{ c.code }}</td>
             <td>{{ c.name }}</td>
             <td>
-                <a href="/attendance/{{ c.id }}/" class="btn btn-sm btn-success">Điểm danh</a>
-                <a href="/grade/{{ c.id }}/" class="btn btn-sm btn-warning">Nhập điểm</a>
+                <a href="{% url 'lecturer_class_detail' c.id %}"
+                   class="btn btn-sm btn-primary">
+                    👁️ Xem chi tiết
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center text-muted">
+                Bạn chưa được phân công lớp nào
             </td>
         </tr>
         {% endfor %}

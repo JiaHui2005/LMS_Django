@@ -24,6 +24,8 @@ urlpatterns = [
     path('classes/lecturer/', class_views.lecturer_classes, name='lecturer_classes'),
     path('attendance/<int:class_id>/', take_attendance, name='attendance'),
     path('grade/<int:class_id>/', enter_grade, name='grade'),
+    path('lecturer/classes/<int:class_id>/syllabus/edit/', academic_views.lecturer_edit_class_syllabus, name='lecturer_edit_class_syllabus'),
+    path('lecturer/classes/<int:class_id>/', class_views.lecturer_class_detail, name='lecturer_class_detail'),
     
     # Dashboard
     path('dashboard/manager/', account_views.manager_dashboard, name='manager_dashboard'),
@@ -50,6 +52,7 @@ urlpatterns = [
     path('manager/classes/<int:class_id>/deactivate/', class_views.class_deactivate, name='class_deactivate'),
     path('manager/classes/<int:class_id>/schedules/<int:schedule_id>/makeup/', schedule_views.class_schedule_makeup, name='class_schedule_makeup'),
     path('manager/classes/<int:class_id>/schedules/<int:schedule_id>/delete/', schedule_views.class_schedule_delete, name='class_schedule_delete'),
+    path('manager/classes/<int:class_id>/syllabus/',academic_views.manager_view_class_syllabus, name='manager_class_syllabus'),
 
     
     # CRUD Notification
@@ -66,6 +69,7 @@ urlpatterns = [
     path('manager/reports/classes/export/csv', report_views.export_class_report, name='export_class_report'),
     path('manager/reports/classes/chart/', report_views.class_chart, name='class_chart'),
     path('manager/reports/classes/export/excel', report_views.export_class_excel, name='export_class_excel'),
+    
     
     # Student
     path('student/classes/', academic_views.my_classes, name='student_my_classes'),

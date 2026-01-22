@@ -51,5 +51,5 @@ class Enrollment(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={'role': 'student'}
     )
-    class_obj = models.ForeignKey(Class, on_delete=models.CASCADE)
+    class_obj = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='enrollments')
     joined_at = models.DateField(auto_now_add=True)

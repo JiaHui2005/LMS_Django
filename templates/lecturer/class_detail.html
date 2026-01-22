@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}{{ class_obj.name }}{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">{{ class_obj.name }}</h3>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#overview">
+            Tổng quan
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#students">
+            Sinh viên
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#attendance">
+            Điểm danh
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#grades">
+            Nhập điểm
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#syllabus">
+            Syllabus
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+
+    <div class="tab-pane fade show active" id="overview">
+        <p>Số sinh viên: {{ students|length }}</p>
+    </div>
+
+    <div class="tab-pane fade" id="students">
+        <ul>
+            {% for e in students %}
+                <li>{{ e.student.full_name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="tab-pane fade" id="attendance">
+        🚧 (gắn view điểm danh sau)
+    </div>
+
+    <div class="tab-pane fade" id="grades">
+        🚧 (gắn nhập điểm sau)
+    </div>
+
+    <div class="tab-pane fade" id="syllabus">
+        {% if syllabus_version %}
+            <a href="{% url 'lecturer_edit_class_syllabus' class_obj.id %}"
+               class="btn btn-primary">
+                Chỉnh sửa syllabus
+            </a>
+        {% else %}
+            <div class="alert alert-warning">
+                Lớp chưa có syllabus
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
